@@ -1,0 +1,12 @@
+.settings
+.project
+/picscrapper
+/release_supporter/target
+/release_supporter/.settings
+/release_supporter/.classpath
+/release_supporter/.project
+/picscrapper_app/target
+/picscrapper_app/.settings
+/picscrapper_app/.classpath
+/picscrapper_app/.project
+

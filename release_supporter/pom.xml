@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>release_supporter</artifactId>
+	<name>Release Supporter for Picscrapper Application</name>
+  
+	<parent>
+		<groupId>com.memeteam</groupId>
+		<artifactId>picscrapper</artifactId>
+		<version>0.0.1</version>
+	</parent>
+  
+	<dependencies>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-engine</artifactId>
+		    <version>5.9.0</version>
+		    <scope>test</scope>
+		</dependency>	
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>  
+	</dependencies> 
+  
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-surefire-plugin</artifactId>
+		    	<version>3.0.0-M7</version>
+		    	<executions>
+		    		<execution>
+		    			<phase>test</phase>
+		    			<configuration>
+	    					<goals>test</goals>
+	    				</configuration>
+		    		</execution>
+		    	</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration>
+					<verbose>true</verbose>
+					<fork>true</fork>
+					<executable>${zulu_jdk}/bin/javac</executable>
+					<compilerVersion>1.8</compilerVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+  
+</project>
