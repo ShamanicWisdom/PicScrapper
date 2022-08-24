@@ -8,12 +8,20 @@
 	<parent>
 		<groupId>com.memeteam</groupId>
 		<artifactId>picscrapper</artifactId>
-		<version>0.0.1</version>
+		<version>0.1.0</version>
 	</parent>
 	
 	<properties>
-		<mainClass>picscrapper.App</mainClass>
+		<mainClass>com.memeteam.picscrapper.App</mainClass>
 	</properties>
+	
+	<dependencies>
+		<dependency>
+		    <groupId>org.apache.maven</groupId>
+		    <artifactId>maven-model</artifactId>
+		    <version>3.8.6</version>
+		</dependency>
+	</dependencies>
    
 	<build>
 		<plugins>
@@ -27,8 +35,7 @@
 					<executable>${zulu_jdk}/bin/javac</executable>
 					<compilerVersion>1.8</compilerVersion>
 				</configuration>
-			</plugin>
-	  	
+			</plugin>	  	
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -36,7 +43,8 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>picscrapper.App</mainClass>
+							<mainClass>com.memeteam.picscrapper.App</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries> <!-- adding info regarding version and name into Manifest file -->
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -52,7 +60,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>	  		
+			</plugin>		
 		</plugins>
 	</build>
   
