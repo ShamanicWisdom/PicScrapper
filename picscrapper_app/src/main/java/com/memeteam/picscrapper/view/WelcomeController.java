@@ -18,6 +18,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import com.memeteam.picscrapper.App;
+
 import javafx.fxml.FXML;
 
 import javafx.stage.Stage;
@@ -26,6 +27,8 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.media.Media;
+import javafx.scene.media.AudioClip;
 
 public class WelcomeController {
 	
@@ -35,6 +38,8 @@ public class WelcomeController {
 	
 	@FXML
 	Label buildInformer;
+	@FXML
+	Label titleLabel;
 		
 	public void setApp(App app, Stage stage) { 
 		this.app = app; 
@@ -46,8 +51,9 @@ public class WelcomeController {
     	try {
     		MavenXpp3Reader reader = new MavenXpp3Reader();
     		Model model = reader.read(new FileReader("pom.xml"));
-			buildInformer.setText("Current veion: " + model.getParent().getVersion());
+			buildInformer.setText("Current version: " + model.getParent().getVersion());
 			stage.setTitle(model.getName());
+			titleLabel.setText(model.getName());
     	} catch(FileNotFoundException e) { //File not found exception will be triggered here if application is ran from JAR itself, not from LocalRunner execution.
     		File jarFile;
     		try {
@@ -57,7 +63,10 @@ public class WelcomeController {
     			Manifest manifest = jarStream.getManifest(); //Getting access to Manifest file of generated jar.
     			Attributes manifestAttributes = manifest.getMainAttributes(); //getting all main attributes contained in manifest file.
     			buildInformer.setText("Current version: " + manifestAttributes.getValue("Implementation-Version"));
-    			stage.setTitle(manifestAttributes.getValue("Implementation-Title"));
+    			stage.setTitle(manifestAttributes.getValue("Implementation-Title"));    	
+    			titleLabel.setText(manifestAttributes.getValue("Implementation-Title"));
+    			jarStream.close();
+    			fileStream.close();
     		} catch(URISyntaxException | IOException ex) { //URL issue - malformed JAR. Should not happen.
     			ex.printStackTrace();
     		}
@@ -68,6 +77,13 @@ public class WelcomeController {
     
     @FXML
     public void handleExit() {
+    	try {
+			Media sound = new Media(App.class.getClassLoader().getResource("sounds/exit.mp3").toURI().toString()); //getting the proper sound file.
+			AudioClip mediaPlayer = new AudioClip(sound.getSource()); //assign a sound as an audioClip.
+	        mediaPlayer.play();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
     	ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
@@ -104,7 +120,7 @@ public class WelcomeController {
 			}
 		else
 			alert.close();
-    };
+    };    
 }
 
 
