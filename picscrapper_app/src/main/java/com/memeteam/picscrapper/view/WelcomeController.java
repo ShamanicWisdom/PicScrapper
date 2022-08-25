@@ -247,7 +247,6 @@ public class WelcomeController {
     	if(dataValidator()) {
         	//Starting to fill ScrapModel object.        	
     		scrapModel.setScrapModel(chosenWebsite, Integer.parseInt(subpagesField.getText()), chosenLocation, chosenBehavior, headlessModeCheckBox.isSelected(), selectorCheckBox.isSelected());
-    		System.out.println(scrapModel.toString());
     		try {
     			Media sound = new Media(App.class.getClassLoader().getResource("sounds/done.mp3").toURI().toString()); //getting the proper sound file.
     			AudioClip mediaPlayer = new AudioClip(sound.getSource()); //assign a sound as an audioClip.
@@ -255,6 +254,7 @@ public class WelcomeController {
     		} catch (URISyntaxException e) {
     			e.printStackTrace();
     		}
+    		app.showAutomationProgress(scrapModel);
     	}    	
     }
     

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import com.memeteam.picscrapper.model.ScrapModel;
+import com.memeteam.picscrapper.view.AutomationController;
 import com.memeteam.picscrapper.view.MainWindowController;
 import com.memeteam.picscrapper.view.WelcomeController;
 
@@ -94,6 +96,21 @@ public class App extends Application {
             root.setCenter(welcome);
             WelcomeController controller = loader.getController();
             controller.setApp(this, primaryStage);
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+    } 
+    
+  	//Automation scene
+    public void showAutomationProgress(ScrapModel scrapModel)
+    {
+        try {
+            loader = new FXMLLoader();
+            loader.setLocation(App.class.getResource("/fxml/view/Automation.fxml"));
+            AnchorPane welcome = (AnchorPane) loader.load();
+            root.setCenter(welcome);
+            AutomationController controller = loader.getController();
+            controller.setApp(this, primaryStage, scrapModel);
         } catch (IOException e) {
            e.printStackTrace();
         }

@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="startButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.311" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memeteam.picscrapper.view.WelcomeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.311" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memeteam.picscrapper.view.WelcomeController">
    <children>
       <Button layoutX="224.0" layoutY="536.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="50.0" prefWidth="100.0" text="Exit" />
       <Button layoutX="14.0" layoutY="536.0" mnemonicParsing="false" onAction="#handleAbout" prefHeight="50.0" prefWidth="100.0" text="About" />
