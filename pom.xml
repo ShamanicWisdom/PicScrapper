@@ -2,15 +2,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.memeteam</groupId>
 	<artifactId>picscrapper</artifactId>
-	<version>0.2.1</version>
+	<version>0.3.0</version>
 	<packaging>pom</packaging>
 	<name>Picscrapper Application SuperPOM</name>
   
 	<modules>
-	<module>picscrapper_app</module>
-	<module>release_supporter</module>
+		<module>picscrapper_app</module>
+		<module>release_supporter</module>
 	</modules>
-  
+	 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
