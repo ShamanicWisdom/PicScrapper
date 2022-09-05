@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -13,6 +14,10 @@ import java.util.function.Consumer;
 import com.memeteam.picscrapper.App;
 import com.memeteam.picscrapper.model.ScrapModel;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.media.MediaPlayer;
@@ -25,7 +30,7 @@ import javafx.stage.Stage;
 import javafx.scene.shape.Circle;
 import javafx.beans.Observable;
 import javafx.beans.InvalidationListener;
-
+import javafx.util.Duration;
 
 public class AutomationController {
 
@@ -71,6 +76,9 @@ public class AutomationController {
 	}
 	
 	NextSongBehaviors nextSongBehavior = NextSongBehaviors.ORDERED;
+	
+	Task<Void> labelTask = null;
+	Thread labelThread = null;
 		
 	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
@@ -139,7 +147,7 @@ public class AutomationController {
 		if(mediaPlayer != null)
 			mediaPlayer.dispose();
 		Media currentSong = songFilesList.get(currentSongIndex);
-		songNameLabel.setText("Now playing: " + songNamesList.get(currentSongIndex));
+		 
 		mediaPlayer = new MediaPlayer(currentSong); 
 	    mediaPlayer.setAutoPlay(true);
 	    mediaPlayer.setVolume(songVolume);
@@ -149,7 +157,44 @@ public class AutomationController {
         	playMusic(1); 
     	});
 	    
-        mediaPlayer.play();
+        mediaPlayer.play();        
+        runLabelTask();
+	}
+	
+	private void runLabelTask() {
+		labelTask = new Task<Void>() {
+			@Override
+			public Void call() throws Exception {
+
+				List<String> splitSongNameList = new ArrayList<>();
+				splitSongNameList.addAll(Arrays.asList(songNamesList.get(currentSongIndex).split("")));
+				splitSongNameList.addAll(Arrays.asList(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "));
+				
+				updateMessage("Now playing: " + songNamesList.get(currentSongIndex));
+								
+				while(mediaPlayer.getStatus() == Status.UNKNOWN || mediaPlayer.getStatus() == Status.PLAYING || mediaPlayer.getStatus() == Status.PAUSED) {
+					Thread.sleep(125);
+					splitSongNameList.add(splitSongNameList.get(0)); //move the first element at the end of list.
+					splitSongNameList.remove(0);
+					
+					StringBuilder songNameToShow = new StringBuilder();					
+					for(String singleChar: splitSongNameList) {
+						songNameToShow.append(singleChar);
+					}
+					
+					updateMessage("Now playing: " + songNameToShow);
+				}
+				return null;
+			}
+        	
+        };
+        
+        songNameLabel.textProperty().bind(labelTask.messageProperty());
+        songNameLabel.setEllipsisString("");
+        
+        labelThread = new Thread(labelTask);
+        labelThread.setDaemon(true);
+        labelThread.start();
 	}
 	
 	private void playMusic(int indexValue) { //indexValue is for allowing the proper navigation via handlePrevious and handleNext methods. 1 for next, -1 for previous.		
@@ -183,7 +228,7 @@ public class AutomationController {
 		Status mediaStatus = mediaPlayer.getStatus();
 		if(mediaStatus == Status.PLAYING) {
 			mediaPlayer.pause();
-			playButton.setText("PA");
+			playButton.setText("PA");			
 		} else {
 			mediaPlayer.play();
 			playButton.setText("PL");
