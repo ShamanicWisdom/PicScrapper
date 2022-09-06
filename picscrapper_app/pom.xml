@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>com.memeteam</groupId>
 		<artifactId>picscrapper</artifactId>
-		<version>0.3.0</version>
+		<version>0.4.0</version>
 	</parent>
 	
 	<properties>
@@ -21,6 +21,43 @@
 		    <artifactId>maven-model</artifactId>
 		    <version>3.8.6</version>
 		</dependency>
+		<!-- Selenium dependencies for firewall handling for local executions -->
+		<dependency>
+		   <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>selenium-java</artifactId>
+		   <version>4.0.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>selenium-api</artifactId>
+		   <version>4.0.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>selenium-http</artifactId>
+		   <version>4.0.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>selenium-support</artifactId>
+		   <version>4.0.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>selenium-edge-driver</artifactId>
+		   <version>4.0.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>selenium-remote-driver</artifactId>
+		   <version>4.0.0</version>
+		</dependency>
+		<!-- For additional File Utils (getting a proper webdriver from jar file) -->
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>		
 	</dependencies>
    
 	<build>

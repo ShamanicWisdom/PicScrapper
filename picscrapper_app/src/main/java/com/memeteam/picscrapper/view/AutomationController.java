@@ -7,16 +7,17 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import com.memeteam.picscrapper.App;
 import com.memeteam.picscrapper.model.ScrapModel;
+import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -30,7 +31,6 @@ import javafx.stage.Stage;
 import javafx.scene.shape.Circle;
 import javafx.beans.Observable;
 import javafx.beans.InvalidationListener;
-import javafx.util.Duration;
 
 public class AutomationController {
 
@@ -75,26 +75,58 @@ public class AutomationController {
 		RANDOM,
 	}
 	
+	SeleniumConfigurator driver = new SeleniumConfigurator();
+	
 	NextSongBehaviors nextSongBehavior = NextSongBehaviors.ORDERED;
 	
 	Task<Void> labelTask = null;
 	Thread labelThread = null;
-		
+	
 	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
 		this.stage = stage;		
 		this.scrapModel = scrapModel;	
 		System.out.println(scrapModel.toString());
 		initializePlayer();
+		try {
+			driver.setupDriver(scrapModel.getHeadlessMode());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}	
 	
 	private void initializePlayer() {
 		playButton.setShape(new Circle(5));
-		InputStream songDirectory = AutomationController.class.getClassLoader().getResourceAsStream("sounds/player");
-		InputStreamReader streamReader = new InputStreamReader(songDirectory, StandardCharsets.UTF_8);
-		BufferedReader bufferedReader = new BufferedReader(streamReader);
-		
-		bufferedReader.lines().forEach(saveTheSong);
+		InputStream songDirectoryAsInputStream = AutomationController.class.getClassLoader().getResourceAsStream("sounds/player");
+		try {
+			//If 0, then resource is unavailable - most probable scenario is: this application has been started from JAR file. Due to that, gripping a directory directly is impossible. 
+			//It is needed to use JarFile and other support classes for having a grip on packed tunes.
+			if(songDirectoryAsInputStream.available() == 0) {
+				//getting a grip to caller JAR file.
+				JarFile jarFile = new JarFile(AutomationController.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+					
+				//Iterate over every directory and file of caller JAR.
+				Enumeration<JarEntry> entries = jarFile.entries();
+				while (entries.hasMoreElements()) {
+				    JarEntry entry = entries.nextElement();
+				    //if song-directory is found, then begin a saving process.
+				    if (entry.getName().contains("sounds/player")) {
+				    	//Grab every file (excluding the directory itself).
+				    	if(!entry.getName().equalsIgnoreCase("sounds/player/")) {
+					        songFilesList.add(new Media(AutomationController.class.getClassLoader().getResource(entry.getName()).toURI().toString()));
+				        	songNamesList.add(entry.getName().replaceAll(".mp3", "").replaceAll("sounds/player/", ""));
+				    	}
+				    }
+				}
+			} else {
+				InputStreamReader streamReader = new InputStreamReader(songDirectoryAsInputStream, StandardCharsets.UTF_8);
+				BufferedReader bufferedReader = new BufferedReader(streamReader);
+				
+				bufferedReader.lines().forEach(saveTheSong);
+			}				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		getRandomTrackNumber();
 		playTheCurrentSong();        
