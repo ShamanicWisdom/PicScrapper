@@ -231,7 +231,7 @@ public class AutomationController {
 	
 	private void playMusic(int indexValue) { //indexValue is for allowing the proper navigation via handlePrevious and handleNext methods. 1 for next, -1 for previous.		
 		Status mediaStatus = mediaPlayer.getStatus();
-		if(mediaStatus == Status.STOPPED || mediaStatus == Status.PLAYING) { //Stopping the song does not set up the STOPPED status instantly - need to check PLAYING status as well.
+		if(mediaStatus == Status.STOPPED || mediaStatus == Status.PLAYING || mediaStatus == Status.PAUSED) { //Stopping the song does not set up the STOPPED status instantly - need to check PLAYING status as well.
 			switch(nextSongBehavior) {
 				case ORDERED: {
 					currentSongIndex += indexValue;
@@ -264,7 +264,6 @@ public class AutomationController {
 		} else {
 			mediaPlayer.play();
 			playButton.setText("PL");
-			playMusic(1);
 		}
 	}
 	

@@ -63,9 +63,8 @@ public class SeleniumConfigurator {
 			String[] splitExceptionMessage = e.getMessage().split("\n");
 			Pattern pattern = Pattern.compile("\\d+");
 			Matcher matcher = pattern.matcher(splitExceptionMessage[1]);
-			while(matcher.find()) {
-				localDriverVersion = "msedgedriver" + matcher.group() + ".exe";
-			}
+			while(matcher.find()) 
+				localDriverVersion = "msedgedriver" + matcher.group() + ".exe";			
 			killDriver();
 			TimeUnit.MILLISECONDS.sleep(500);
 			deleteLocalDriver();
