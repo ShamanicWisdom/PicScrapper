@@ -1,33 +1,50 @@
 package com.memeteam.picscrapper.view;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.imageio.ImageIO;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.memeteam.picscrapper.App;
 import com.memeteam.picscrapper.model.ScrapModel;
 import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.scene.shape.Circle;
 import javafx.beans.Observable;
 import javafx.beans.InvalidationListener;
@@ -75,23 +92,60 @@ public class AutomationController {
 		RANDOM,
 	}
 	
-	SeleniumConfigurator driver = new SeleniumConfigurator();
+	WebDriver driver;
 	
 	NextSongBehaviors nextSongBehavior = NextSongBehaviors.ORDERED;
 	
 	Task<Void> labelTask = null;
 	Thread labelThread = null;
 	
+	Task<Void> komixxyTask = null;
+	Thread komixxyThread = null;
+	
 	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
-		this.stage = stage;		
+		this.stage = stage;			
 		this.scrapModel = scrapModel;	
 		System.out.println(scrapModel.toString());
+		
+		progressTextArea.setEditable(false);
+		
 		initializePlayer();
+		
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() { //adding onClose event - will trigger 'Are you sure?' dialog stage instead of casually closing the window.
+			@Override
+			public void handle(WindowEvent event) {
+				try {
+					Media sound = new Media(App.class.getClassLoader().getResource("sounds/exit.mp3").toURI().toString()); //getting the proper sound file.
+					AudioClip audioClip = new AudioClip(sound.getSource()); //assign a sound as an audioClip.
+					mediaPlayer.pause();
+					audioClip.play();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}				
+				ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+				ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+				Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
+				alert.setTitle("Exit");
+				alert.setHeaderText(null);
+				alert.setContentText("Are you sure?");
+				
+				Optional<ButtonType> result = alert.showAndWait();
+				if(result.get() == okButton) {
+					 handleStop();
+					System.exit(0);
+				} else {
+					alert.close();
+					mediaPlayer.play();
+					event.consume();
+				}
+			}
+		});
+				
 		try {
-			driver.setupDriver(scrapModel.getHeadlessMode());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			startAutomation();		
+		} catch(Exception e) {
+			
 		}
 	}	
 	
@@ -143,8 +197,85 @@ public class AutomationController {
         });
 	}
 	
+	private void startAutomation() {
+		//Running a task.
+		komixxyTask = new Task<Void>() {
+			@Override
+			public Void call() throws Exception {		
+				String message = "Starting automation task for " + scrapModel.getWebsite() + "\n";
+				updateMessage(message);
+				try {
+					driver = SeleniumConfigurator.setupDriver(scrapModel.getHeadlessMode());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				message += "Selenium started successfully. \n";
+				updateMessage(message);
+				
+				for(int i = 1; i <= scrapModel.getSubpagesToHandle(); i++) {
+					driver.get("https://komixxy.pl/page/" + i);
+					List<WebElement> picList = driver.findElements(By.className("pic"));
+					List<WebElement> memeObjectList = new ArrayList<>();
+					for(WebElement picture: picList) {						
+						if(picture.getAttribute("id").startsWith("pic"))
+							memeObjectList.add(picture);
+					}
+					
+					for(WebElement memeObject: memeObjectList) {
+						try {
+						WebElement memeName = memeObject.findElement(By.className("picture"));
+						WebElement memeDate = memeObject.findElement(By.className("infobar"));
+						
+						String[] dateTable = memeDate.getText().split(" ");	
+						List<String> dateList = new ArrayList<>();
+						for(int j = 1; j <= 5; j++) 
+							if(j != 4) 
+								dateList.add(dateTable[j]);
+						
+						String date = "";
+						for(String dateElement: dateList) 							
+							date += dateElement + " ";
+						
+						date = date.trim();
+						
+						WebElement meme = memeObject.findElement(By.className("pic_image")).findElement(By.className("pic"));
+						String memeImageLink = meme.getAttribute("src");
+						
+						if(memeImageLink.contains("blank.gif")) 
+							memeImageLink = "https://komixxy.pl/" + meme.getAttribute("data-src");
+																		
+						BufferedImage image = ImageIO.read(new URL(memeImageLink));
+						File savedImage = new File(scrapModel.getSavingLocation() + "/" + memeName.getText() + ".jpg");
+						ImageIO.write(image, "jpg", savedImage);						
+						
+						message += "Meme: [" + memeName.getText() + "] saved successfully. \n";
+						updateMessage(message);
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}				
+				
+				return null;
+			}
+        };
+		
+		progressTextArea.textProperty().bind(komixxyTask.messageProperty());	
+        
+		komixxyThread = new Thread(komixxyTask);
+		komixxyThread.setDaemon(true);
+		komixxyThread.start();
+	}
+	
 	@FXML
 	void handleStop() {
+		if(driver != null) {
+			try {
+				driver.quit();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 		mediaPlayer.dispose();
 		app.showWelcome();
 	}
@@ -218,7 +349,6 @@ public class AutomationController {
 				}
 				return null;
 			}
-        	
         };
         
         songNameLabel.textProperty().bind(labelTask.messageProperty());

@@ -21,7 +21,7 @@ public class SeleniumConfigurator {
 	
 	static String localDriverVersion = "msedgedriver104.exe";
 	
-	public WebDriver setupDriver(boolean headlessMode) throws InterruptedException {
+	public static WebDriver setupDriver(boolean headlessMode) throws InterruptedException {
 		try {
 			InputStream driverResource = SeleniumConfigurator.class.getClassLoader().getResourceAsStream("drivers/" + localDriverVersion);
 			
@@ -68,8 +68,7 @@ public class SeleniumConfigurator {
 			killDriver();
 			TimeUnit.MILLISECONDS.sleep(500);
 			deleteLocalDriver();
-			driver = setupDriver(headlessMode);
-			
+			driver = setupDriver(headlessMode);			
 		} catch(IOException ioEx) {
 			ioEx.printStackTrace();
 		}
