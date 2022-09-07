@@ -102,7 +102,7 @@ public class App extends Application {
     } 
     
   	//Automation scene
-    public void showAutomationProgress(ScrapModel scrapModel)
+    public void showAutomationProgress(ScrapModel scrapModel) throws Exception
     {
         try {
             loader = new FXMLLoader();

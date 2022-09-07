@@ -25,6 +25,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.memeteam.picscrapper.App;
+import com.memeteam.picscrapper.automation.Komixxy;
 import com.memeteam.picscrapper.model.ScrapModel;
 import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 
@@ -92,17 +93,17 @@ public class AutomationController {
 		RANDOM,
 	}
 	
-	WebDriver driver;
+	public static WebDriver driver;
 	
 	NextSongBehaviors nextSongBehavior = NextSongBehaviors.ORDERED;
 	
 	Task<Void> labelTask = null;
 	Thread labelThread = null;
 	
-	Task<Void> komixxyTask = null;
-	Thread komixxyThread = null;
+	protected static Task<Void> automationTask = null;
+	protected static Thread automationThread = null;
 	
-	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
+	public void setApp(App app, Stage stage, ScrapModel scrapModel) throws Exception { 
 		this.app = app; 
 		this.stage = stage;			
 		this.scrapModel = scrapModel;	
@@ -141,12 +142,20 @@ public class AutomationController {
 				}
 			}
 		});
-				
-		try {
-			startAutomation();		
-		} catch(Exception e) {
-			
+		
+		switch(scrapModel.getWebsite()) {
+			case "Komixxy":
+				automationTask = Komixxy.startAutomation(scrapModel);
+				break;
+			default:
+				throw new Exception("Given website [" + scrapModel.getWebsite() + "] is not supported!");
 		}
+		
+		progressTextArea.textProperty().bind(automationTask.messageProperty());	
+        
+		automationThread = new Thread(automationTask);
+		automationThread.setDaemon(true);
+		automationThread.start();
 	}	
 	
 	private void initializePlayer() {
@@ -195,76 +204,6 @@ public class AutomationController {
                 }
             }
         });
-	}
-	
-	private void startAutomation() {
-		//Running a task.
-		komixxyTask = new Task<Void>() {
-			@Override
-			public Void call() throws Exception {		
-				String message = "Starting automation task for " + scrapModel.getWebsite() + "\n";
-				updateMessage(message);
-				try {
-					driver = SeleniumConfigurator.setupDriver(scrapModel.getHeadlessMode());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				message += "Selenium started successfully. \n";
-				updateMessage(message);
-				
-				for(int i = 1; i <= scrapModel.getSubpagesToHandle(); i++) {
-					driver.get("https://komixxy.pl/page/" + i);
-					List<WebElement> picList = driver.findElements(By.className("pic"));
-					List<WebElement> memeObjectList = new ArrayList<>();
-					for(WebElement picture: picList) {						
-						if(picture.getAttribute("id").startsWith("pic"))
-							memeObjectList.add(picture);
-					}
-					
-					for(WebElement memeObject: memeObjectList) {
-						try {
-						WebElement memeName = memeObject.findElement(By.className("picture"));
-						WebElement memeDate = memeObject.findElement(By.className("infobar"));
-						
-						String[] dateTable = memeDate.getText().split(" ");	
-						List<String> dateList = new ArrayList<>();
-						for(int j = 1; j <= 5; j++) 
-							if(j != 4) 
-								dateList.add(dateTable[j]);
-						
-						String date = "";
-						for(String dateElement: dateList) 							
-							date += dateElement + " ";
-						
-						date = date.trim();
-						
-						WebElement meme = memeObject.findElement(By.className("pic_image")).findElement(By.className("pic"));
-						String memeImageLink = meme.getAttribute("src");
-						
-						if(memeImageLink.contains("blank.gif")) 
-							memeImageLink = "https://komixxy.pl/" + meme.getAttribute("data-src");
-																		
-						BufferedImage image = ImageIO.read(new URL(memeImageLink));
-						File savedImage = new File(scrapModel.getSavingLocation() + "/" + memeName.getText() + ".jpg");
-						ImageIO.write(image, "jpg", savedImage);						
-						
-						message += "Meme: [" + memeName.getText() + "] saved successfully. \n";
-						updateMessage(message);
-						} catch(Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}				
-				
-				return null;
-			}
-        };
-		
-		progressTextArea.textProperty().bind(komixxyTask.messageProperty());	
-        
-		komixxyThread = new Thread(komixxyTask);
-		komixxyThread.setDaemon(true);
-		komixxyThread.start();
 	}
 	
 	@FXML

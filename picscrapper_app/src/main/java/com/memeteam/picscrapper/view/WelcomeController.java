@@ -243,7 +243,7 @@ public class WelcomeController {
     };  
     
     @FXML
-    void handleScrapping() {
+    void handleScrapping() throws Exception {
     	if(dataValidator()) {
         	//Starting to fill ScrapModel object.        	
     		scrapModel.setScrapModel(chosenWebsite, Integer.parseInt(subpagesField.getText()), chosenLocation, chosenBehavior, headlessModeCheckBox.isSelected(), selectorCheckBox.isSelected());
