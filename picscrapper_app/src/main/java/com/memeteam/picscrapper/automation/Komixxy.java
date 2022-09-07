@@ -19,7 +19,7 @@ import javafx.concurrent.Task;
 
 public class Komixxy extends AutomationController {
 	
-	public static Task startAutomation(ScrapModel scrapModel) {
+	public static Task<Void> startAutomation(ScrapModel scrapModel) {
 		//Running a task.
 		Task<Void> automationTask = new Task<Void>() {
 			@Override
