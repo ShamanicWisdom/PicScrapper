@@ -87,8 +87,7 @@ public class App extends Application {
     }
     
     //Start scene.
-    public void showWelcome()
-    {
+    public void showWelcome() {
         try {
             loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/fxml/view/Welcome.fxml"));
@@ -102,8 +101,7 @@ public class App extends Application {
     } 
     
   	//Automation scene
-    public void showAutomationProgress(ScrapModel scrapModel) throws Exception
-    {
+    public void showAutomationProgress(ScrapModel scrapModel) {
         try {
             loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/fxml/view/Automation.fxml"));

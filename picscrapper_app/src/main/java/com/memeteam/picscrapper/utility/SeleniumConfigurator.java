@@ -57,9 +57,8 @@ public class SeleniumConfigurator {
 			
 			options.setHeadless(headlessMode);
 			
-			driver = new EdgeDriver(options);			
+			driver = new EdgeDriver(options);
 		} catch(SessionNotCreatedException e) {
-			e.printStackTrace();
 			String[] splitExceptionMessage = e.getMessage().split("\n");
 			Pattern pattern = Pattern.compile("\\d+");
 			Matcher matcher = pattern.matcher(splitExceptionMessage[1]);
@@ -69,8 +68,8 @@ public class SeleniumConfigurator {
 			TimeUnit.MILLISECONDS.sleep(500);
 			deleteLocalDriver();
 			driver = setupDriver(headlessMode);			
-		} catch(IOException ioEx) {
-			ioEx.printStackTrace();
+		} catch(Exception ex) {
+			ex.printStackTrace();
 		}
 		
 		driver.manage().deleteAllCookies();

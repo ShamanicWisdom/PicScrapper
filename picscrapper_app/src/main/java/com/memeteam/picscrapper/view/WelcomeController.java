@@ -1,15 +1,25 @@
 package com.memeteam.picscrapper.view;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
@@ -87,8 +97,9 @@ public class WelcomeController {
 	String chosenWebsite;
 	File chosenLocation;
 	String chosenBehavior;
-	
-		
+
+	List<String> automationWebsitedNameList = new ArrayList<>();
+			
 	public void setApp(App app, Stage stage) { 
 		this.app = app; 
 		this.stage = stage;		
@@ -192,9 +203,7 @@ public class WelcomeController {
     	headlessModeCheckBox.setSelected(false);
     	selectorCheckBox.setSelected(false);
     }
-    	
-    	
-    
+   
     @FXML
     void handleExit() {
     	try {
@@ -255,6 +264,38 @@ public class WelcomeController {
     	String errorMessage = "";
     	if(chosenWebsite.isEmpty())
     		errorMessage += "No website is chosen!\n";
+
+    	InputStream automationDirectoryInputStream = AutomationController.class.getClassLoader().getResourceAsStream("com/memeteam/picscrapper/automation");
+		try {
+			//If 0, then resource is unavailable - most probable scenario is: this application has been started from JAR file. Due to that, gripping a directory directly is impossible. 
+			//It is needed to use JarFile and other support classes for having a grip on packed tunes.
+			if(automationDirectoryInputStream.available() == 0) {
+				//getting a grip to caller JAR file.
+				JarFile jarFile = new JarFile(AutomationController.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+					
+				//Iterate over every directory and file of caller JAR.
+				Enumeration<JarEntry> entries = jarFile.entries();
+				while (entries.hasMoreElements()) {
+				    JarEntry entry = entries.nextElement();
+				    //if song-directory is found, then begin a saving process.
+				    if (entry.getName().contains("com/memeteam/picscrapper/automation")) 
+				    	//Grab every file (excluding the directory itself).
+				    	if(!entry.getName().equalsIgnoreCase("com/memeteam/picscrapper/automation/") || !entry.getName().contains("$"))
+				    		automationWebsitedNameList.add(entry.getName().replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));				    
+				}
+			} else {
+				InputStreamReader streamReader = new InputStreamReader(automationDirectoryInputStream, StandardCharsets.UTF_8);
+				BufferedReader bufferedReader = new BufferedReader(streamReader);				
+				bufferedReader.lines().forEach(saveTheWebsiteClass);
+			}				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if(!automationWebsitedNameList.contains(chosenWebsite)) 
+			errorMessage += "Given website [" + chosenWebsite + "] is not supported!";
+    	
+    	    	
     	if(subpagesField.getText().isEmpty()) 
     		errorMessage += "Subpages count is not set up!\n";
     	try {
@@ -286,8 +327,15 @@ public class WelcomeController {
     		alert.showAndWait();
     		return false;
     	}
-    	
     }
+    
+    //Creating a custom Consumer event for lambda expression.
+  	Consumer<String> saveTheWebsiteClass = new Consumer<String>() {
+  	    public void accept(String automationClassName) {
+  	        automationWebsitedNameList.add(automationClassName.replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));
+  	    }
+  	};
 }
+
 
 

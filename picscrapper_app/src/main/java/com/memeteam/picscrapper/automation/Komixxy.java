@@ -22,9 +22,10 @@ public class Komixxy extends AutomationController {
 	public static Task<Void> startAutomation(ScrapModel scrapModel) {
 		//Running a task.
 		Task<Void> automationTask = new Task<Void>() {
+			String message = "Starting automation task for " + scrapModel.getWebsite() + "\n";
+			
 			@Override
-			public Void call() throws Exception {		
-				String message = "Starting automation task for " + scrapModel.getWebsite() + "\n";
+			public Void call() throws Exception {
 				updateMessage(message);
 				try {
 					driver = SeleniumConfigurator.setupDriver(scrapModel.getHeadlessMode());
@@ -79,6 +80,21 @@ public class Komixxy extends AutomationController {
 				}				
 				
 				return null;
+			}
+			
+			//When task is completed.
+			@Override
+			public void succeeded() {
+				message += "All memes saved successfully. Task completed!";
+				updateMessage(message);
+				driver.quit();
+			}
+			
+			//When task fails.
+			@Override
+			public void failed() {
+				message += "Task failed!";
+				updateMessage(message);
 			}
         };		
         return automationTask;

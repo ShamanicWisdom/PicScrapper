@@ -1,12 +1,9 @@
 package com.memeteam.picscrapper.view;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,17 +14,11 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import javax.imageio.ImageIO;
-
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import com.memeteam.picscrapper.App;
 import com.memeteam.picscrapper.automation.Komixxy;
 import com.memeteam.picscrapper.model.ScrapModel;
-import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -103,7 +94,7 @@ public class AutomationController {
 	protected static Task<Void> automationTask = null;
 	protected static Thread automationThread = null;
 	
-	public void setApp(App app, Stage stage, ScrapModel scrapModel) throws Exception { 
+	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
 		this.stage = stage;			
 		this.scrapModel = scrapModel;	
@@ -147,8 +138,6 @@ public class AutomationController {
 			case "Komixxy":
 				automationTask = Komixxy.startAutomation(scrapModel);
 				break;
-			default:
-				throw new Exception("Given website [" + scrapModel.getWebsite() + "] is not supported!");
 		}
 		
 		progressTextArea.textProperty().bind(automationTask.messageProperty());	
@@ -208,11 +197,13 @@ public class AutomationController {
 	
 	@FXML
 	void handleStop() {
+		if(automationThread.isAlive())
+			automationThread.interrupt();
 		if(driver != null) {
 			try {
 				driver.quit();
 			} catch(Exception e) {
-				e.printStackTrace();
+				System.out.println("Exception: " + e.getLocalizedMessage());
 			}
 		}
 		mediaPlayer.dispose();
