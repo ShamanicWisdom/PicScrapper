@@ -18,22 +18,21 @@ import com.memeteam.picscrapper.view.AutomationController;
 import javafx.concurrent.Task;
 
 public class Komixxy extends AutomationController {
+		
+	public static Task<Void> startAutomation(ScrapModel scrapModel) {		
 	
-	public static Task<Void> startAutomation(ScrapModel scrapModel) {
 		//Running a task.
-		Task<Void> automationTask = new Task<Void>() {
-			String message = "Starting automation task for " + scrapModel.getWebsite() + "\n";
-			
+		Task<Void> automationTask = new Task<Void>() {			
 			@Override
 			public Void call() throws Exception {
-				updateMessage(message);
+				messageList.clear();
+				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Starting automation task for " + scrapModel.getWebsite()))));
 				try {
 					driver = SeleniumConfigurator.setupDriver(scrapModel.getHeadlessMode());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				message += "Selenium started successfully. \n";
-				updateMessage(message);
+				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Selenium started successfully."))));
 				
 				for(int i = 1; i <= scrapModel.getSubpagesToHandle(); i++) {
 					driver.get("https://komixxy.pl/page/" + i);
@@ -68,11 +67,26 @@ public class Komixxy extends AutomationController {
 							memeImageLink = "https://komixxy.pl/" + meme.getAttribute("data-src");
 																		
 						BufferedImage image = ImageIO.read(new URL(memeImageLink));
-						File savedImage = new File(scrapModel.getSavingLocation() + "/" + memeName.getText() + ".jpg");
+						File savedImage = new File(scrapModel.getSavingLocation() + "/" + memeName.getText().replace("?", "") + ".jpg");
+						if(!scrapModel.getDuplicateBehaviorPattern().equalsIgnoreCase("overwrite"))
+							if(savedImage.exists()) {
+								int duplicateNumber = 2;
+								
+								while(savedImage.exists()) {	
+									//String originalName = savedImage.getName().replaceAll(".jpg", "");
+									String duplicatedName = savedImage.getName().replaceAll(".jpg", "");
+									if(savedImage.getName().contains("_")) {
+										duplicatedName = duplicatedName.substring(0, (duplicatedName.lastIndexOf('_'))) + "_" + duplicateNumber + ".jpg";
+									}
+									else 
+										duplicatedName = duplicatedName + "_" + duplicateNumber + ".jpg";
+									savedImage = new File(scrapModel.getSavingLocation() + "/" + duplicatedName);
+									duplicateNumber++;
+								}
+							}
 						ImageIO.write(image, "jpg", savedImage);						
 						
-						message += "Meme: [" + memeName.getText() + "] saved successfully. \n";
-						updateMessage(message);
+						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Meme: [" + memeName.getText() + "] saved successfully."))));
 						} catch(Exception e) {
 							e.printStackTrace();
 						}
@@ -85,16 +99,14 @@ public class Komixxy extends AutomationController {
 			//When task is completed.
 			@Override
 			public void succeeded() {
-				message += "All memes saved successfully. Task completed!";
-				updateMessage(message);
+				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "All memes saved successfully. Task completed!"))));				
 				driver.quit();
 			}
 			
 			//When task fails.
 			@Override
 			public void failed() {
-				message += "Task failed!";
-				updateMessage(message);
+				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Task failed!"))));
 			}
         };		
         return automationTask;

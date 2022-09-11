@@ -1,8 +1,6 @@
 package com.memeteam.picscrapper.model;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 public class ScrapModel {
 	

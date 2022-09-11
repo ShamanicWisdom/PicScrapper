@@ -94,6 +94,8 @@ public class AutomationController {
 	protected static Task<Void> automationTask = null;
 	protected static Thread automationThread = null;
 	
+	public static List<String> messageList = new ArrayList<>();
+	
 	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
 		this.stage = stage;			
@@ -270,12 +272,7 @@ public class AutomationController {
 					splitSongNameList.add(splitSongNameList.get(0)); //move the first element at the end of list.
 					splitSongNameList.remove(0);
 					
-					StringBuilder songNameToShow = new StringBuilder();					
-					for(String singleChar: splitSongNameList) {
-						songNameToShow.append(singleChar);
-					}
-					
-					updateMessage("Now playing: " + songNameToShow);
+					updateMessage("Now playing: " + new String(String.join("", splitSongNameList)));
 				}
 				return null;
 			}
@@ -358,5 +355,12 @@ public class AutomationController {
 				break;
 			}
 		}
+	}
+	
+	protected static List<String> updateMessageStack(List<String> messageList, String newMessage) {
+		messageList.add(newMessage);		
+		if(messageList.size() > 20)
+			messageList.remove(0);
+		return messageList;
 	}
 }
