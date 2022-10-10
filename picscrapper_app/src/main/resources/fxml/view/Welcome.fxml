@@ -5,106 +5,202 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.311" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memeteam.picscrapper.view.WelcomeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="600.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.311" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memeteam.picscrapper.view.WelcomeController">
    <children>
-      <Button layoutX="224.0" layoutY="536.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="50.0" prefWidth="100.0" text="Exit" />
-      <Button layoutX="14.0" layoutY="536.0" mnemonicParsing="false" onAction="#handleAbout" prefHeight="50.0" prefWidth="100.0" text="About" />
-      <Label fx:id="buildInformer" layoutX="461.0" layoutY="536.0" prefHeight="50.0" prefWidth="125.0" styleClass="label-default" text="build informer" />
-      <Label fx:id="titleLabel" alignment="CENTER" layoutY="14.0" prefHeight="53.0" prefWidth="600.0" styleClass="label-default" text="Title" textAlignment="CENTER">
+      <Button layoutX="250.0" layoutY="674.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="50.0" prefWidth="100.0" text="Exit" AnchorPane.bottomAnchor="25.0" />
+      <Button layoutX="29.0" layoutY="674.0" mnemonicParsing="false" onAction="#handleAbout" prefHeight="50.0" prefWidth="100.0" text="About" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" />
+      <Label fx:id="buildInformer" layoutX="425.0" layoutY="700.0" prefHeight="25.0" prefWidth="150.0" styleClass="label-small-text" text="build informer" AnchorPane.bottomAnchor="25.0" />
+      <Label fx:id="titleLabel" alignment="CENTER" layoutY="14.0" prefHeight="50.0" prefWidth="600.0" styleClass="label-title" text="Title" textAlignment="CENTER" AnchorPane.topAnchor="15.0">
          <font>
             <Font name="System Bold" size="36.0" />
          </font>
       </Label>
-      <GridPane layoutX="50.0" layoutY="67.0" prefHeight="350.0" prefWidth="500.0">
-        <columnConstraints>
-          <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="338.0" minWidth="10.0" prefWidth="226.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.0" minWidth="10.0" prefWidth="275.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <GridPane fx:id="configurationPane" layoutX="50.0" layoutY="93.0" prefHeight="550.0" prefWidth="500.0" styleClass="table-view" AnchorPane.topAnchor="90.0">
+         <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="338.0" minWidth="10.0" prefWidth="226.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.0" minWidth="10.0" prefWidth="275.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+         </rowConstraints>
          <children>
-            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="200.0" text="Choose a website to scrap:" textAlignment="RIGHT" wrapText="true">
+            <AnchorPane fx:id="tagOrCommunityLeftAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="5" />
+            <AnchorPane fx:id="tagLeftAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="6" />
+            <AnchorPane fx:id="communityLeftAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="7" />
+            <AnchorPane fx:id="subpagesLeftAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="8" />
+            <AnchorPane fx:id="loginLeftAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="9" />
+            <AnchorPane fx:id="passwordLeftAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="10" />
+            <AnchorPane fx:id="passwordRightAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <AnchorPane fx:id="loginRightAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <AnchorPane fx:id="subpagesRightAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <AnchorPane fx:id="communityRightAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <AnchorPane fx:id="tagRightAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <AnchorPane fx:id="tagOrCommunityRightAnchor" prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="1" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="2" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="3" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="table-view-cell" GridPane.rowIndex="4" />
+            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Choose a website to scrap:" textAlignment="RIGHT" wrapText="true">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="200.0" text="How many sub-pages?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="1">
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="How many sub-pages?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="8">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="200.0" text="Saving location:" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="2">
+            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Saving location:" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="1">
                <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-               <GridPane.margin>
-                  <Insets right="5.0" />
-               </GridPane.margin></Label>
-            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="300.0" text="What to do with existing or duplicated files:" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="3">
-               <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <TextField fx:id="subpagesField" prefHeight="35.0" prefWidth="275.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ChoiceBox fx:id="websiteChoiceBox" prefHeight="35.0" prefWidth="275.0" GridPane.columnIndex="1" />
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-               <children>
-                  <RadioButton fx:id="overwriteRadio" layoutX="51.0" layoutY="37.0" mnemonicParsing="false" text="Overwrite" AnchorPane.leftAnchor="50.0" />
-                  <RadioButton fx:id="keepRadio" layoutX="160.0" layoutY="37.0" mnemonicParsing="false" text="Keep" AnchorPane.rightAnchor="50.0" />
-               </children>
-            </AnchorPane>
-            <Button fx:id="locationButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="locationLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="75.0" prefWidth="160.0" text="chosen or not" textAlignment="RIGHT" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="300.0" styleClass="label-table-content" text="What to do with existing files:" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="2">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="5.0" />
+               </GridPane.margin>
+            </Label>
+            <TextField fx:id="subpagesField" minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="275.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <ChoiceBox fx:id="websiteChoiceBox" prefHeight="49.0" prefWidth="275.0" GridPane.columnIndex="1" />
+            <Button fx:id="locationButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="100.0" text="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="locationLabel" alignment="CENTER" contentDisplay="CENTER" ellipsisString="" nodeOrientation="LEFT_TO_RIGHT" prefHeight="50.0" prefWidth="175.0" styleClass="label-table-content" text="Directory chosen/not" textAlignment="CENTER" textOverrun="CLIP" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
                <padding>
                   <Insets right="5.0" />
                </padding>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
             </Label>
-            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="300.0" text="Headless mode (silent, invisible browser)?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="4">
+            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="300.0" styleClass="label-table-content" text="Headless mode (silent, invisible browser)?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="3">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <CheckBox fx:id="headlessModeCheckBox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Use headless mode?" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
-            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="300.0" text="Automated Web Driver Selector?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="5">
+            <CheckBox fx:id="headlessModeCheckBox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Use headless mode?" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <Label alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="300.0" styleClass="label-table-content" text="Automated Web Driver Selector?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="4">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <CheckBox fx:id="selectorCheckBox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Use automated selector?" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+            <CheckBox fx:id="selectorCheckBox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Use automated selector?" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="(optional) Login?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="9">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="5.0" />
+               </GridPane.margin>
+            </Label>
+            <TextField fx:id="loginField" minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="275.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Tag or Community?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="5">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Tag name?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="6">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Community name?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="7">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="5.0" />
+               </GridPane.margin>
+            </Label>
+            <TextField fx:id="tagField" minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="275.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <TextField fx:id="communityField" minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="275.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="(optional) Password?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="10">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="5.0" />
+               </GridPane.margin>
+            </Label>
+            <PasswordField fx:id="passwordField" minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="275.0" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <RadioButton fx:id="tagRadio" contentDisplay="CENTER" minHeight="0.0" minWidth="0.0" mnemonicParsing="false" prefHeight="35.0" text="Tag" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+            </RadioButton>
+            <RadioButton fx:id="communityRadio" contentDisplay="CENTER" minHeight="0.0" minWidth="0.0" mnemonicParsing="false" prefHeight="35.0" text="Community" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+               <padding>
+                  <Insets right="50.0" />
+               </padding>
+            </RadioButton>
+            <RadioButton fx:id="overwriteRadio" contentDisplay="CENTER" mnemonicParsing="false" text="Overwrite" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+            </RadioButton>
+            <RadioButton fx:id="keepRadio" contentDisplay="CENTER" mnemonicParsing="false" text="Keep" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+               <padding>
+                  <Insets right="50.0" />
+               </padding>
+            </RadioButton>
          </children>
       </GridPane>
-      <Button layoutX="174.0" layoutY="417.0" mnemonicParsing="false" onAction="#handleScrapping" prefHeight="50.0" prefWidth="200.0" text="Get your pictures!" />
+      <ToggleButton fx:id="darkModeToggle" layoutX="500.0" layoutY="674.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Dark" AnchorPane.bottomAnchor="50.0" />
+      <ToggleButton fx:id="lightModeToggle" layoutX="425.0" layoutY="674.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Light" AnchorPane.bottomAnchor="50.0" />
+      <Button layoutX="200.0" layoutY="586.0" mnemonicParsing="false" onAction="#handleScrapping" prefHeight="50.0" prefWidth="200.0" text="Get your pictures!" />
    </children>
 </AnchorPane>

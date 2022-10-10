@@ -23,9 +23,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.event.EventHandler;
+import javafx.stage.StageStyle;
 
 public class App extends Application {
+	
+	public String currentStyle = "";
 
 	private Stage primaryStage;
 	
@@ -35,8 +39,12 @@ public class App extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		this.primaryStage = primaryStage;			
+		this.primaryStage = primaryStage;	
 		
+		primaryStage.initStyle(StageStyle.UNDECORATED);
+		
+		currentStyle = "Dark";
+						
 		primaryStage.getIcons().add(new Image(App.class.getClassLoader().getResourceAsStream("images/incredible_icon.png"))); //Adding a window icon.
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() { //adding onClose event - will trigger 'Are you sure?' dialog stage instead of casually closing the window.
 			@Override
@@ -51,9 +59,12 @@ public class App extends Application {
 				ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 				ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 				Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
+				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + currentStyle + ".css").toExternalForm());
 				alert.setTitle("Exit");
 				alert.setHeaderText(null);
 				alert.setContentText("Are you sure?");
+				alert.initStyle(StageStyle.UNDECORATED);
+				alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + currentStyle + "/questionIcon.png"))));
 				
 				Optional<ButtonType> result = alert.showAndWait();
 				if(result.get() == okButton) {
@@ -69,15 +80,19 @@ public class App extends Application {
 		initializeMainWindow();		
 	}
 	
+	//Main window initialization.
     public void initializeMainWindow() {
         try {
             loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/fxml/view/MainWindow.fxml")); 
-            root = (BorderPane) loader.load();
+            
+            root = (BorderPane) loader.load();            
+            root.getStylesheets().add(getClass().getResource("/styles/" + currentStyle + ".css").toExternalForm());
+            
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             MainWindowController controller = loader.getController();
-            controller.setApp(this);
+            controller.setApp(this, primaryStage);
             primaryStage.show();                   
             primaryStage.setResizable(false);
             showWelcome();
@@ -92,9 +107,9 @@ public class App extends Application {
             loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/fxml/view/Welcome.fxml"));
             AnchorPane welcome = (AnchorPane) loader.load();
-            root.setCenter(welcome);
+            root.setBottom(welcome);
             WelcomeController controller = loader.getController();
-            controller.setApp(this, primaryStage);
+            controller.setApp(this, primaryStage, root);
         } catch (IOException e) {
            e.printStackTrace();
         }
@@ -105,8 +120,8 @@ public class App extends Application {
         try {
             loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/fxml/view/Automation.fxml"));
-            AnchorPane welcome = (AnchorPane) loader.load();
-            root.setCenter(welcome);
+            AnchorPane automation = (AnchorPane) loader.load();
+            root.setBottom(automation);
             AutomationController controller = loader.getController();
             controller.setApp(this, primaryStage, scrapModel);
         } catch (IOException e) {

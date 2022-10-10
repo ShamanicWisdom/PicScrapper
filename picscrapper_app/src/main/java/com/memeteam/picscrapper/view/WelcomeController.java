@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,11 @@ import com.memeteam.picscrapper.utility.Constants;
 import javafx.fxml.FXML;
 
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.DirectoryChooser;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -44,25 +49,34 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.paint.Color;
 import javafx.scene.media.AudioClip;
+import javafx.scene.layout.RowConstraints;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 
-public class WelcomeController {
+public class WelcomeController extends App {
 	
 	Stage stage;
+	BorderPane root;
 		
 	private App app;
 	
 	DirectoryChooser directoryChooser = new DirectoryChooser();
 			
+	@FXML
+	GridPane configurationPane;
+	
 	@FXML
 	Label buildInformer;
 	@FXML
@@ -72,14 +86,25 @@ public class WelcomeController {
 	
 	@FXML
 	TextField subpagesField;
+	@FXML
+	TextField tagField;
+	@FXML
+	TextField communityField;
+	@FXML
+	TextField loginField;
+	
+	@FXML
+	PasswordField passwordField;
 	
 	@FXML
 	ChoiceBox<String> websiteChoiceBox;
 	
 	@FXML
 	Button locationButton;
-	
-	final ToggleGroup radioButtonToggleGroup = new ToggleGroup();
+
+	final ToggleGroup duplicateBehaviorPatternToggleGroup = new ToggleGroup();
+	final ToggleGroup tagOrCommunityToggleGroup = new ToggleGroup();
+	final ToggleGroup styleToggleGroup = new ToggleGroup();
 	
 	@FXML
 	RadioButton overwriteRadio;
@@ -87,9 +112,53 @@ public class WelcomeController {
 	RadioButton keepRadio;
 	
 	@FXML
+	RadioButton tagRadio;
+	@FXML
+	RadioButton communityRadio;
+	
+	@FXML
 	CheckBox headlessModeCheckBox;
 	@FXML
 	CheckBox selectorCheckBox;
+	
+	@FXML
+	ToggleButton lightModeToggle;
+	@FXML
+	ToggleButton darkModeToggle;
+	
+	//GridPane rows.
+	RowConstraints tagOrCommunityToggleRow;
+	RowConstraints tagRow;
+	RowConstraints communityRow;
+	RowConstraints subpagesRow;
+	RowConstraints loginRow;
+	RowConstraints passwordRow;
+	
+	//(CSS only) row cell anchor panes.
+	@FXML
+	AnchorPane tagOrCommunityLeftAnchor;
+	@FXML
+	AnchorPane tagOrCommunityRightAnchor;
+	@FXML
+	AnchorPane tagLeftAnchor;
+	@FXML
+	AnchorPane tagRightAnchor;
+	@FXML
+	AnchorPane communityLeftAnchor;
+	@FXML
+	AnchorPane communityRightAnchor;
+	@FXML
+	AnchorPane subpagesLeftAnchor;
+	@FXML
+	AnchorPane subpagesRightAnchor;
+	@FXML
+	AnchorPane loginLeftAnchor;
+	@FXML
+	AnchorPane loginRightAnchor;
+	@FXML
+	AnchorPane passwordLeftAnchor;
+	@FXML
+	AnchorPane passwordRightAnchor;
 	
 	//Model
 	ScrapModel scrapModel;
@@ -97,12 +166,15 @@ public class WelcomeController {
 	String chosenWebsite;
 	File chosenLocation;
 	String chosenBehavior;
+	String chosenSource;
 
 	List<String> automationWebsitedNameList = new ArrayList<>();
+	List<Object> rowList = new ArrayList<>();
 			
-	public void setApp(App app, Stage stage) { 
+	public void setApp(App app, Stage stage, BorderPane root) { 
 		this.app = app; 
 		this.stage = stage;		
+		this.root = root;
 		showBuildInfo(); 
 		initContent();
 	}	
@@ -137,9 +209,11 @@ public class WelcomeController {
     
     void initContent() {		
 		scrapModel = new ScrapModel();
+
+    	locationLabel.setText(""); 
 		
-    	locationLabel.setText("");    	
-    	subpagesField.setText("");
+		resetFields();    	
+    	initializeRowNodes();
     	
     	//Website ChoiceBox script initiation.
     	websiteChoiceBox.setTooltip(new Tooltip("List of supported pages ready to be scrapped."));
@@ -149,6 +223,7 @@ public class WelcomeController {
     	websiteChoiceBox.getSelectionModel().selectFirst();
     	
     	chosenWebsite = Constants.SUPPORTED_WEBSITES.get(0);
+    	updateTheGrid(chosenWebsite);
     	
     	//Listener for possible changing of value inside websiteChoiceBox object.
     	websiteChoiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -160,12 +235,25 @@ public class WelcomeController {
     				observableValue.removeListener(this); //Deleting listener - for stopping the listening event. It will solve the issue of continuous listening of the list what leads to infinite loop. Consider this as a 'break;' in loop.
     			}
     			chosenWebsite = Constants.SUPPORTED_WEBSITES.get(newValue.intValue());
+    			updateTheGrid(chosenWebsite);
     		}
     	});
     	
-    	//SubPages count Field script initiation.
+    	//SubPages count field script initiation.
     	subpagesField.setTooltip(new Tooltip("Specify how many newest sub-pages you want to scrap.\nLeave this field empty in order to scrap everything."));
     	subpagesField.setPromptText("0-x (0 means that you want to scrap all)");
+    	
+    	tagField.setTooltip(new Tooltip("Provide a tag name."));
+    	tagField.setPromptText("Provide a tag name.");
+    	
+    	communityField.setTooltip(new Tooltip("Provide a community name."));
+    	communityField.setPromptText("Provide a community name.");
+    	
+    	loginField.setTooltip(new Tooltip("Provide a login (if empty, then automation will proceed without a login attempt)."));
+    	loginField.setPromptText("Optional - provide a login.");
+    	
+    	passwordField.setTooltip(new Tooltip("Provide a password (if empty, then automation will proceed without a login attempt)."));
+    	passwordField.setPromptText("Optional - provide a password.");
     	
     	//Destination of saved Content script initiation
     	locationButton.setTooltip(new Tooltip("Specify the location for your pictures..."));
@@ -185,23 +273,99 @@ public class WelcomeController {
     	
     	//Duplicates treating strategy script initiation.
     	//assigning radio buttons to one toggle group - in order to allow to assign a state relation between them.
-    	overwriteRadio.setToggleGroup(radioButtonToggleGroup);
+    	overwriteRadio.setToggleGroup(duplicateBehaviorPatternToggleGroup);
     	overwriteRadio.setUserData("overwrite");
     	overwriteRadio.setSelected(true);
     	chosenBehavior = overwriteRadio.getUserData().toString();
-    	keepRadio.setToggleGroup(radioButtonToggleGroup);
+    	keepRadio.setToggleGroup(duplicateBehaviorPatternToggleGroup);
     	keepRadio.setUserData("keep");
     	
-    	radioButtonToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+    	duplicateBehaviorPatternToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
     		public void changed(ObservableValue observableValue, Toggle currentToggle, Toggle newToggle) {
-    			if(radioButtonToggleGroup.getSelectedToggle() != null) {
-    				chosenBehavior = radioButtonToggleGroup.getSelectedToggle().getUserData().toString();
+    			if(duplicateBehaviorPatternToggleGroup.getSelectedToggle() != null) {
+    				chosenBehavior = duplicateBehaviorPatternToggleGroup.getSelectedToggle().getUserData().toString();
+    			}
+    		}
+    	});
+    	
+    	//Tag or community strategy.
+    	//assigning radio buttons to one toggle group - in order to allow to assign a state relation between them.
+    	tagRadio.setToggleGroup(tagOrCommunityToggleGroup);
+    	tagRadio.setUserData("tag");
+    	tagRadio.setSelected(true);
+    	chosenSource = tagRadio.getUserData().toString();
+    	communityRadio.setToggleGroup(tagOrCommunityToggleGroup);
+    	communityRadio.setUserData("community");
+    	    	
+    	tagOrCommunityToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+    		public void changed(ObservableValue observableValue, Toggle currentToggle, Toggle newToggle) {
+    			if(tagOrCommunityToggleGroup.getSelectedToggle() != null) {
+    				chosenSource = tagOrCommunityToggleGroup.getSelectedToggle().getUserData().toString();
+    				showSpecificRow(chosenSource);
     			}
     		}
     	});
     	
     	headlessModeCheckBox.setSelected(false);
     	selectorCheckBox.setSelected(false);
+    	
+    	//modeGroup
+    	//Tag or community strategy.
+    	//assigning radio buttons to one toggle group - in order to allow to assign a state relation between them.
+    	darkModeToggle.setToggleGroup(styleToggleGroup);
+    	darkModeToggle.setUserData("Dark");
+    	lightModeToggle.setToggleGroup(styleToggleGroup);
+    	lightModeToggle.setUserData("Light");
+    	
+    	System.out.println("curr style: " + app.currentStyle);
+    	if(app.currentStyle.equalsIgnoreCase("Dark"))
+    		darkModeToggle.setSelected(true);
+    	else
+    		lightModeToggle.setSelected(true);
+    	    	
+    	styleToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+    		public void changed(ObservableValue observableValue, Toggle currentToggle, Toggle newToggle) {
+    			if(styleToggleGroup.getSelectedToggle() != null) {
+    				System.out.println("X: " + styleToggleGroup.getSelectedToggle().getUserData().toString());
+    				app.currentStyle = styleToggleGroup.getSelectedToggle().getUserData().toString();
+    				root.getStylesheets().clear();
+    				root.getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+    			}
+    		}
+    	});
+    }
+    
+    private void initializeRowNodes() {
+    	rowList = Arrays.asList(configurationPane.getRowConstraints().toArray());
+    	
+    	tagOrCommunityToggleRow = (RowConstraints)rowList.get(5);
+    	tagRow = (RowConstraints)rowList.get(6);
+    	communityRow = (RowConstraints)rowList.get(7);
+    	subpagesRow = (RowConstraints)rowList.get(8);
+    	loginRow = (RowConstraints)rowList.get(9);
+    	passwordRow = (RowConstraints)rowList.get(10);
+    }
+    
+    private void updateTheGrid(String website) {    	
+    	
+    	hideAllSpecificRows();
+    	
+		switch(website.toLowerCase()) {
+			case "komixxy": {
+				showSpecificRow(subpagesRow);
+				
+				break;
+			}
+			case "coub.com": {
+				showSpecificRow(tagOrCommunityToggleRow);
+				showSpecificRow(loginRow);
+				showSpecificRow(passwordRow);
+				break;
+			}
+			default: {
+				System.exit(0);
+			}
+		}
     }
    
     @FXML
@@ -216,9 +380,13 @@ public class WelcomeController {
     	ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
+		
+		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 		alert.setTitle("Exit");
 		alert.setHeaderText(null);
 		alert.setContentText("Are you sure?");
+		alert.initStyle(StageStyle.UNDECORATED);
+		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/questionIcon.png"))));
 		
 		Optional<ButtonType> result = alert.showAndWait();
 		if(result.get() == okButton)
@@ -226,19 +394,23 @@ public class WelcomeController {
 		else
 			alert.close();
 		
-    };
+    }
     
     @FXML
     void handleAbout() {
     	ButtonType githubButton = new ButtonType("Check GitHub", ButtonBar.ButtonData.OK_DONE);
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "", githubButton, cancelButton);
+		
+		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 		alert.setTitle("About");
 		alert.setHeaderText("About the program");
 		alert.setContentText("PicScrapper Application\n"
 				+ "Application made for educational purposes.\n"
 				+ "Select your favourite (and supported) site and scrap\n"
 				+ "all available pictures and memes!");   
+		alert.initStyle(StageStyle.UNDECORATED);
+		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/questionIcon.png"))));
 		
 		Optional<ButtonType> result = alert.showAndWait();
 		if(result.get() == githubButton)
@@ -249,8 +421,8 @@ public class WelcomeController {
 			}
 		else
 			alert.close();
-    };  
-    
+    }
+
     @FXML
     void handleScrapping() throws Exception {
     	if(dataValidator()) {
@@ -295,16 +467,17 @@ public class WelcomeController {
 		if(!automationWebsitedNameList.contains(chosenWebsite)) 
 			errorMessage += "Given website [" + chosenWebsite + "] is not supported!";
     	
-    	    	
-    	if(subpagesField.getText().isEmpty()) 
-    		errorMessage += "Subpages count is not set up!\n";
-    	try {
-    		int subpagesCount = Integer.parseInt(subpagesField.getText());
-    		if(subpagesCount < 0)
-    			errorMessage += "Subpages count cannot be lower than 0!\n";
-    	} catch(NumberFormatException e) {
-    		errorMessage += "Subpages count field allows only digits!\n";
-    	}
+		if(subpagesRow.getMaxHeight() != 0.0) {
+	    	if(subpagesField.getText().isEmpty()) 
+	    		errorMessage += "Subpages count is not set up!\n";
+	    	try {
+	    		int subpagesCount = Integer.parseInt(subpagesField.getText());
+	    		if(subpagesCount < 0)
+	    			errorMessage += "Subpages count cannot be lower than 0!\n";
+	    	} catch(NumberFormatException e) {
+	    		errorMessage += "Subpages count field allows only digits!\n";
+	    	}
+		}
     	if(chosenLocation == null) 
     		errorMessage += "Saving location is not set up!\n";
     	if(chosenBehavior.isEmpty()) 
@@ -324,6 +497,9 @@ public class WelcomeController {
     		alert.setTitle("Error!");;
     		alert.setHeaderText("Something went wrong...");
     		alert.setContentText(errorMessage);
+    		alert.initStyle(StageStyle.UNDECORATED);
+			alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+    		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/errorIcon.png"))));
     		alert.showAndWait();
     		return false;
     	}
@@ -335,6 +511,116 @@ public class WelcomeController {
   	        automationWebsitedNameList.add(automationClassName.replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));
   	    }
   	};
+  	
+  	private void resetFields() {	   	
+    	tagField.setText("");
+    	communityField.setText("");
+    	subpagesField.setText("");
+    	loginField.setText("");
+    	passwordField.setText("");
+  	}
+  	
+  	private void hideAllSpecificRows() {  		
+  		resetFields();
+  		
+  		tagOrCommunityToggleRow.setMinHeight(0.0);
+  		tagOrCommunityToggleRow.setMaxHeight(0.0);
+  		tagOrCommunityToggleRow.setPrefHeight(0.0);
+  		tagRadio.setVisible(false);
+  		communityRadio.setVisible(false);
+  		tagOrCommunityLeftAnchor.setVisible(false);
+  		tagOrCommunityRightAnchor.setVisible(false);
+
+  		tagRow.setMinHeight(0.0);
+  		tagRow.setMaxHeight(0.0);
+  		tagRow.setPrefHeight(0.0);
+  		tagLeftAnchor.setVisible(false);
+  		tagRightAnchor.setVisible(false);
+  		
+  		communityRow.setMinHeight(0.0);
+  		communityRow.setMaxHeight(0.0);
+  		communityRow.setPrefHeight(0.0);
+  		communityLeftAnchor.setVisible(false);
+  		communityRightAnchor.setVisible(false);
+  		
+  		subpagesRow.setMinHeight(0.0);
+  		subpagesRow.setMaxHeight(0.0);
+  		subpagesRow.setPrefHeight(0.0);
+  		subpagesLeftAnchor.setVisible(false);
+  		subpagesRightAnchor.setVisible(false);
+  		  		
+  		loginRow.setMinHeight(0.0);
+  		loginRow.setMaxHeight(0.0);
+  		loginRow.setPrefHeight(0.0);
+  		loginLeftAnchor.setVisible(false);
+  		loginRightAnchor.setVisible(false);
+  		
+  		passwordRow.setMinHeight(0.0);
+  		passwordRow.setMaxHeight(0.0);
+  		passwordRow.setPrefHeight(0.0);
+  		passwordLeftAnchor.setVisible(false);
+  		passwordRightAnchor.setVisible(false);
+  	}
+  	
+  	private void showSpecificRow(RowConstraints row) {
+  		row.setMaxHeight(50.0);
+  		row.setPrefHeight(50.0);
+  		if(tagOrCommunityToggleRow.getPrefHeight() == 50.0) {
+  			tagRadio.setVisible(true);
+  			communityRadio.setVisible(true);
+  			showSpecificRow(chosenSource);
+  			tagOrCommunityLeftAnchor.setVisible(true);
+  			tagOrCommunityRightAnchor.setVisible(true);
+  		} 
+  		if(tagRow.getPrefHeight() == 50.0) {
+  			tagLeftAnchor.setVisible(true);
+  	  		tagRightAnchor.setVisible(true);
+  		}
+  		if(communityRow.getPrefHeight() == 50.0) {
+  			communityLeftAnchor.setVisible(true);
+  			communityRightAnchor.setVisible(true);
+  		}
+  		if(subpagesRow.getPrefHeight() == 50.0) {
+  			subpagesLeftAnchor.setVisible(true);
+  			subpagesRightAnchor.setVisible(true);
+  		}
+  		if(loginRow.getPrefHeight() == 50.0) {
+  			loginLeftAnchor.setVisible(true);
+  			loginRightAnchor.setVisible(true);
+  		}
+  		if(passwordRow.getPrefHeight() == 50.0) {
+  			passwordLeftAnchor.setVisible(true);
+  			passwordRightAnchor.setVisible(true);
+  		}
+  	}
+  	
+  	private void showSpecificRow(String source) {
+  		if(source.equalsIgnoreCase("tag")) {
+  			communityRow.setMinHeight(0.0);
+  	  		communityRow.setMaxHeight(0.0);
+  	  		communityRow.setPrefHeight(0.0);
+  	  		communityField.setText("");
+  	  		communityLeftAnchor.setVisible(false);
+  	  		communityRightAnchor.setVisible(false);
+  	  		
+	  		tagRow.setMaxHeight(50.0);
+	  		tagRow.setPrefHeight(50.0);
+	  		tagLeftAnchor.setVisible(true);
+	  		tagRightAnchor.setVisible(true);
+  		} else {
+  			tagRow.setMinHeight(0.0);
+  			tagRow.setMaxHeight(0.0);
+  			tagRow.setPrefHeight(0.0);
+  			tagField.setText("");
+  			tagLeftAnchor.setVisible(false);
+  	  		tagRightAnchor.setVisible(false);
+  	  		
+	  		communityRow.setMaxHeight(50.0);
+	  		communityRow.setPrefHeight(50.0);
+	  		communityLeftAnchor.setVisible(true);
+	  		communityRightAnchor.setVisible(true);
+  		}
+  	}
 }
 
 

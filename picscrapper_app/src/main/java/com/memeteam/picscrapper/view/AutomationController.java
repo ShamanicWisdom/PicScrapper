@@ -36,12 +36,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Circle;
 import javafx.beans.Observable;
 import javafx.beans.InvalidationListener;
 
-public class AutomationController {
+public class AutomationController extends App {
 
 	Stage stage;
 	
@@ -123,6 +124,7 @@ public class AutomationController {
 				alert.setTitle("Exit");
 				alert.setHeaderText(null);
 				alert.setContentText("Are you sure?");
+				alert.initStyle(StageStyle.UNDECORATED);
 				
 				Optional<ButtonType> result = alert.showAndWait();
 				if(result.get() == okButton) {
@@ -136,8 +138,8 @@ public class AutomationController {
 			}
 		});
 		
-		switch(scrapModel.getWebsite()) {
-			case "Komixxy":
+		switch(scrapModel.getWebsite().toLowerCase()) {
+			case "komixxy":
 				automationTask = Komixxy.startAutomation(scrapModel);
 				break;
 		}

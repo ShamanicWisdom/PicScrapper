@@ -73,11 +73,9 @@ public class Komixxy extends AutomationController {
 								int duplicateNumber = 2;
 								
 								while(savedImage.exists()) {	
-									//String originalName = savedImage.getName().replaceAll(".jpg", "");
 									String duplicatedName = savedImage.getName().replaceAll(".jpg", "");
-									if(savedImage.getName().contains("_")) {
+									if(savedImage.getName().contains("_"))
 										duplicatedName = duplicatedName.substring(0, (duplicatedName.lastIndexOf('_'))) + "_" + duplicateNumber + ".jpg";
-									}
 									else 
 										duplicatedName = duplicatedName + "_" + duplicateNumber + ".jpg";
 									savedImage = new File(scrapModel.getSavingLocation() + "/" + duplicatedName);
