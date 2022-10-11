@@ -121,6 +121,7 @@ public class AutomationController extends App {
 				ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 				ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 				Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
+				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 				alert.setTitle("Exit");
 				alert.setHeaderText(null);
 				alert.setContentText("Are you sure?");

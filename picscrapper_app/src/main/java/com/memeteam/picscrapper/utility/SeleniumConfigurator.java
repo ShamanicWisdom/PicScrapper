@@ -134,7 +134,7 @@ public class SeleniumConfigurator {
 				    if (entry.getName().contains("drivers")) {
 				    	//Grab every file (excluding the directory itself).
 				    	if(!entry.getName().equalsIgnoreCase("drivers/")) {
-					        driversList.add(entry.getName().replaceAll(".exe", "").replaceAll("drivers/", ""));
+					        driversList.add(entry.getName().replaceAll("drivers/", ""));
 				    	}
 				    }
 				}
@@ -148,7 +148,7 @@ public class SeleniumConfigurator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
 		if(!driversList.contains(localDriverVersion)) {
 			throw new DriverNotAvailableException(localDriverVersion);
 		}
@@ -157,7 +157,7 @@ public class SeleniumConfigurator {
 	//Creating a custom Consumer event for lambda expression.
 	static Consumer<String> saveTheDriver = new Consumer<String>() {
 	    public void accept(String songName) {
-	        driversList.add(songName.replaceAll(".exe", ""));
+	        driversList.add(songName);
 	    }
 	};
 }
