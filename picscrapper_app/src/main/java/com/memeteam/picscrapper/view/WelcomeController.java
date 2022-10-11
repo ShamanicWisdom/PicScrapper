@@ -263,7 +263,7 @@ public class WelcomeController extends App {
     		chosenLocation = directoryChooser.showDialog(stage);
     		if(chosenLocation != null) {
     			locationLabel.setText("Directory chosen.");
-    			locationLabel.setTextFill(Color.web("#006400"));
+    			locationLabel.setTextFill(Color.web("#39ff14"));
     		} else {
     			locationLabel.setText("Directory not chosen.");
     			locationLabel.setTextFill(Color.web("#be0000"));
@@ -317,7 +317,6 @@ public class WelcomeController extends App {
     	lightModeToggle.setToggleGroup(styleToggleGroup);
     	lightModeToggle.setUserData("Light");
     	
-    	System.out.println("curr style: " + app.currentStyle);
     	if(app.currentStyle.equalsIgnoreCase("Dark"))
     		darkModeToggle.setSelected(true);
     	else
@@ -326,7 +325,6 @@ public class WelcomeController extends App {
     	styleToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
     		public void changed(ObservableValue observableValue, Toggle currentToggle, Toggle newToggle) {
     			if(styleToggleGroup.getSelectedToggle() != null) {
-    				System.out.println("X: " + styleToggleGroup.getSelectedToggle().getUserData().toString());
     				app.currentStyle = styleToggleGroup.getSelectedToggle().getUserData().toString();
     				root.getStylesheets().clear();
     				root.getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());

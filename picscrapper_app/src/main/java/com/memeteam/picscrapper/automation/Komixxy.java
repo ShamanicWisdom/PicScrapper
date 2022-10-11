@@ -29,10 +29,17 @@ public class Komixxy extends AutomationController {
 				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Starting automation task for " + scrapModel.getWebsite()))));
 				try {
 					driver = SeleniumConfigurator.setupDriver(scrapModel.getHeadlessMode());
+					updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Selenium started successfully."))));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Selenium Driver init has been interrupted unexpectedly..."))));	
+					updateMessage(new String(String.join("\n", updateMessageStack(messageList, e.getMessage()))));	
+					super.failed();
+				} catch(Exception e) {
+					updateMessage(new String(String.join("\n", updateMessageStack(messageList, "An exception has been occured during Selenium Driver init..."))));	
+					updateMessage(new String(String.join("\n", updateMessageStack(messageList, e.getMessage()))));	
+					super.failed();
 				}
-				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Selenium started successfully."))));
 				
 				for(int i = 1; i <= scrapModel.getSubpagesToHandle(); i++) {
 					driver.get("https://komixxy.pl/page/" + i);
