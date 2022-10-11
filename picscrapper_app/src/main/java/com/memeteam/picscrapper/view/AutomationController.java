@@ -25,6 +25,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.AudioClip;
@@ -121,11 +123,12 @@ public class AutomationController extends App {
 				ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 				ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 				Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
-				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 				alert.setTitle("Exit");
 				alert.setHeaderText(null);
 				alert.setContentText("Are you sure?");
-				alert.initStyle(StageStyle.UNDECORATED);
+				alert.initStyle(StageStyle.UNDECORATED);				
+				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+				alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/questionIcon.png"))));
 				
 				Optional<ButtonType> result = alert.showAndWait();
 				if(result.get() == okButton) {

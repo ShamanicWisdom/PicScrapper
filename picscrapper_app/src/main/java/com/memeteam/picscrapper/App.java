@@ -59,12 +59,12 @@ public class App extends Application {
 				ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 				ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 				Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
-				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + currentStyle + ".css").toExternalForm());
 				alert.setTitle("Exit");
 				alert.setHeaderText(null);
 				alert.setContentText("Are you sure?");
 				alert.initStyle(StageStyle.UNDECORATED);
-				alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + currentStyle + "/questionIcon.png"))));
+				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + currentStyle + ".css").toExternalForm());
+				alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + currentStyle.toLowerCase() + "/questionIcon.png"))));
 				
 				Optional<ButtonType> result = alert.showAndWait();
 				if(result.get() == okButton) {

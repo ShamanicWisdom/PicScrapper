@@ -379,12 +379,12 @@ public class WelcomeController extends App {
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
 		
-		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 		alert.setTitle("Exit");
 		alert.setHeaderText(null);
 		alert.setContentText("Are you sure?");
 		alert.initStyle(StageStyle.UNDECORATED);
-		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/questionIcon.png"))));
+		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/questionIcon.png"))));
 		
 		Optional<ButtonType> result = alert.showAndWait();
 		if(result.get() == okButton)
@@ -400,7 +400,6 @@ public class WelcomeController extends App {
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "", githubButton, cancelButton);
 		
-		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 		alert.setTitle("About");
 		alert.setHeaderText("About the program");
 		alert.setContentText("PicScrapper Application\n"
@@ -408,7 +407,8 @@ public class WelcomeController extends App {
 				+ "Select your favourite (and supported) site and scrap\n"
 				+ "all available pictures and memes!");   
 		alert.initStyle(StageStyle.UNDECORATED);
-		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/questionIcon.png"))));
+		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/questionIcon.png"))));
 		
 		Optional<ButtonType> result = alert.showAndWait();
 		if(result.get() == githubButton)
@@ -497,7 +497,7 @@ public class WelcomeController extends App {
     		alert.setContentText(errorMessage);
     		alert.initStyle(StageStyle.UNDECORATED);
 			alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
-    		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/errorIcon.png"))));
+    		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/errorIcon.png"))));
     		alert.showAndWait();
     		return false;
     	}
