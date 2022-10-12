@@ -79,7 +79,9 @@
     -fx-font-size: 10pt;
     -fx-background-color: #000000;
     -fx-border-color: #000000;
-    -fx-border-width:2.0px;
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
 }
 
 .alert.confirmation.dialog-pane > *.label.content {
@@ -98,7 +100,9 @@
     -fx-font-size: 10pt;
     -fx-background-color: #000000;
     -fx-border-color: #000000;
-    -fx-border-width:2.0px;
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
 }
 
 .alert.information.dialog-pane > *.label.content {
@@ -118,7 +122,9 @@
     -fx-border-color: #000000;
     -fx-font-color: #39ff14;
     -fx-text-fill: #39ff14;
-    -fx-border-width:2.0px;
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
 }
 
 .alert.error.dialog-pane > *.label.content {
@@ -139,7 +145,9 @@
     -fx-font-size: 10pt;
     -fx-background-color: #000000;
     -fx-border-color: #000000;
-    -fx-border-width:2.0px;
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
 }
 
 .alert.warning.dialog-pane > *.label.content {
@@ -328,4 +336,35 @@
     -fx-font-size: 9pt;
     -fx-text-fill: #39ff14;
     -fx-background-insets: 0 0 0 0, 0, 1, 2;
+}
+
+.audio-pane {
+    -fx-background-color: #000000;
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
+}
+
+.audio-label {
+    -fx-background-color: transparent;
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 9pt;
+    -fx-text-fill: #39ff14;
+}
+
+.audio-slider .track {
+    -fx-background-color: transparent !important;
+}
+
+.audio-slider .thumb {
+    -fx-background-color: #39ff14 !important;
+}
+
+.slider-stack {
+    -fx-border-width: 1 1 1 1;
+    -fx-border-insets: 1 1 1 1;
+    -fx-border-color: #39ff14;
 }

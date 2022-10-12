@@ -22,6 +22,7 @@ import com.memeteam.picscrapper.model.ScrapModel;
 
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
@@ -42,7 +43,11 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.scene.shape.Circle;
 import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.InvalidationListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 public class AutomationController extends App {
 
@@ -58,7 +63,7 @@ public class AutomationController extends App {
 	//For randomizing tracks properly.
 	Random randomGenerator = new Random();
 	int currentSongIndex = -1;
-	
+		
 	@FXML
 	TextArea progressTextArea;
 	
@@ -76,11 +81,24 @@ public class AutomationController extends App {
 	
 	@FXML
 	Slider volumeSlider;
+	@FXML
+	StackPane volumeStackPane;
+	@FXML
+	Label volumeLabel;
+	@FXML
+	Label songTimerLabel;
 	
+	@FXML
+	Slider songTimerSlider;
+	@FXML
+	StackPane songTimerStackPane;
+		
 	MediaPlayer mediaPlayer;
 	
 	double songVolume = 0.25;
 	
+	String currentSongTotalDuration = "";
+		
 	enum NextSongBehaviors {
 		ORDERED,
 		REPEAT,
@@ -191,6 +209,7 @@ public class AutomationController extends App {
 		getRandomTrackNumber();
 		playTheCurrentSong();        
         
+		//Volume-related adjustments
         volumeSlider.setValue(25);
         volumeSlider.valueProperty().addListener(new InvalidationListener() {
         	public void invalidated(Observable ov)
@@ -201,6 +220,33 @@ public class AutomationController extends App {
                 }
             }
         });
+        
+        volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                String style = String.format("-fx-background-color: linear-gradient(to right, #39ff14 %d%%, #000000 %d%%);",
+                		newValue.intValue(), newValue.intValue());
+                volumeStackPane.setStyle(style);
+                volumeLabel.setText("Volume: " + newValue.intValue() + "%");
+            }
+        });
+        
+        volumeStackPane.setStyle("-fx-background-color: linear-gradient(to right, #39ff14 25%, #000000 0%);");
+        
+        volumeLabel.setText("Volume: 25%");
+        
+        //Song timer adjustments
+        songTimerSlider.setValue(0);
+        
+        songTimerSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                String style = String.format("-fx-background-color: linear-gradient(to right, #39ff14 %d%%, #000000 %d%%);",
+                		newValue.intValue(), newValue.intValue());
+                songTimerStackPane.setStyle(style);
+            }
+        });
+        
+        songTimerStackPane.setStyle("-fx-background-color: linear-gradient(to right, #39ff14 25%, #000000 0%);");
+        
 	}
 	
 	@FXML
@@ -246,10 +292,43 @@ public class AutomationController extends App {
 	
 	private void playTheCurrentSong() {
 		if(mediaPlayer != null)
-			mediaPlayer.dispose();
+			mediaPlayer.dispose();	
+				
 		Media currentSong = songFilesList.get(currentSongIndex);
-		 
-		mediaPlayer = new MediaPlayer(currentSong); 
+				 
+		mediaPlayer = new MediaPlayer(currentSong); 		
+		
+		currentSongTotalDuration = "00:00";
+		
+		mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+			songTimerSlider.setValue(newValue.toSeconds());
+			songTimerLabel.setText("00:00 / 00:00");
+			if(currentSongTotalDuration.isEmpty() || currentSongTotalDuration.equalsIgnoreCase("00:00")) {
+				currentSongTotalDuration = new String(secondsToTimestamp(mediaPlayer.getMedia().getDuration().toSeconds()));
+			} else {
+				songTimerSlider.setValue((newValue.toSeconds() / mediaPlayer.getMedia().getDuration().toSeconds()) * 100);
+				songTimerLabel.setText(secondsToTimestamp(newValue.toSeconds()) + " / " + currentSongTotalDuration);
+			}
+	    });
+		
+		songTimerSlider.setValue(0);
+		
+		songTimerSlider.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(!currentSongTotalDuration.isEmpty()) 
+					mediaPlayer.seek(Duration.seconds(mediaPlayer.getMedia().getDuration().toSeconds() * (songTimerSlider.getValue() / 100)));				
+			}
+		});
+		
+		songTimerSlider.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(!currentSongTotalDuration.isEmpty()) 
+					mediaPlayer.seek(Duration.seconds(mediaPlayer.getMedia().getDuration().toSeconds() * (songTimerSlider.getValue() / 100)));
+			}
+		});
+		
 	    mediaPlayer.setAutoPlay(true);
 	    mediaPlayer.setVolume(songVolume);
 	    
@@ -258,8 +337,14 @@ public class AutomationController extends App {
         	playMusic(1); 
     	});
 	    
+	    runLabelTask();
         mediaPlayer.play();        
-        runLabelTask();
+	}
+	
+	private String secondsToTimestamp(double secondsInTotal) {
+		int minutes = (int) ((secondsInTotal % 3600) / 60);
+        int seconds = (int) (secondsInTotal % 60);
+        return String.format("%02d:%02d", minutes, seconds);
 	}
 	
 	private void runLabelTask() {
@@ -269,6 +354,10 @@ public class AutomationController extends App {
 
 				List<String> splitSongNameList = new ArrayList<>();
 				splitSongNameList.addAll(Arrays.asList(songNamesList.get(currentSongIndex).split("")));
+				int songNameLength = splitSongNameList.size();
+				if(songNameLength < 50) 
+					for(; songNameLength <= 50; songNameLength++)
+						splitSongNameList.add(" ");				
 				splitSongNameList.addAll(Arrays.asList(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "));
 				
 				updateMessage("Now playing: " + songNamesList.get(currentSongIndex));
@@ -365,7 +454,7 @@ public class AutomationController extends App {
 	
 	protected static List<String> updateMessageStack(List<String> messageList, String newMessage) {
 		messageList.add(newMessage);		
-		if(messageList.size() > 20)
+		if(messageList.size() > 13)
 			messageList.remove(0);
 		return messageList;
 	}
