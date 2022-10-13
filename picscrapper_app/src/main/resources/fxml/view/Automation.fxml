@@ -11,7 +11,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.311" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memeteam.picscrapper.view.AutomationController">
    <children>
-      <Button layoutX="225.0" layoutY="676.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="50.0" prefWidth="150.0" text="Stop / Go Back" AnchorPane.bottomAnchor="25.0" />
+      <Button fx:id="stopButton" layoutX="225.0" layoutY="676.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="50.0" prefWidth="150.0" text="Stop" AnchorPane.bottomAnchor="25.0" />
       <Label layoutX="25.0" layoutY="19.0" prefHeight="55.0" prefWidth="550.0" styleClass="label-dialog-title" text="Automation Progress">
          <font>
             <Font name="System Bold" size="26.0" />
@@ -24,8 +24,8 @@
                <children>
                   <StackPane fx:id="volumeStackPane" layoutX="258.0" layoutY="139.0" prefHeight="5.0" prefWidth="80.0" styleClass="slider-stack" />
                   <Slider fx:id="volumeSlider" layoutX="255.0" layoutY="134.0" maxHeight="5.0" prefHeight="5.0" prefWidth="85.0" styleClass="audio-slider" />
-                  <Button fx:id="previousSongButton" layoutX="105.0" layoutY="133.0" mnemonicParsing="false" onAction="#handlePrevious" prefHeight="40.0" prefWidth="40.0" text="B" />
-                  <Button fx:id="playButton" layoutX="155.0" layoutY="131.0" mnemonicParsing="false" onAction="#handlePlayPause" prefHeight="40.0" prefWidth="40.0" text="PL" AnchorPane.leftAnchor="156.0" AnchorPane.rightAnchor="155.0" />
+                  <Button fx:id="previousSongButton" layoutX="101.0" layoutY="131.0" maxHeight="40.0" maxWidth="40.0" mnemonicParsing="false" onAction="#handlePrevious" prefHeight="40.0" prefWidth="40.0" />
+                  <Button fx:id="playButton" layoutX="153.0" layoutY="131.0" maxHeight="40.0" maxWidth="40.0" mnemonicParsing="false" onAction="#handlePlayPause" prefHeight="40.0" prefWidth="40.0" />
                   <Label fx:id="songNameLabel" prefHeight="40.0" styleClass="audio-label" text="Song name" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                      <font>
                         <Font name="System Bold" size="14.0" />
@@ -34,8 +34,8 @@
                         <Insets left="5.0" />
                      </padding>
                   </Label>
-                  <Button fx:id="nextSongButton" layoutX="205.0" layoutY="131.0" mnemonicParsing="false" onAction="#handleNext" prefHeight="40.0" prefWidth="40.0" text="N" />
-                  <Button fx:id="nextSongBehaviorButton" layoutX="35.0" layoutY="131.0" mnemonicParsing="false" onAction="#handleNextSongBehavior" prefHeight="40.0" prefWidth="40.0" text="ORD">
+                  <Button fx:id="nextSongButton" layoutX="205.0" layoutY="131.0" maxHeight="40.0" maxWidth="40.0" mnemonicParsing="false" onAction="#handleNext" prefHeight="40.0" prefWidth="40.0" />
+                  <Button fx:id="nextSongBehaviorButton" layoutX="35.0" layoutY="131.0" maxHeight="40.0" maxWidth="40.0" mnemonicParsing="false" onAction="#handleNextSongBehavior" prefHeight="40.0" prefWidth="40.0">
                      <font>
                         <Font size="10.0" />
                      </font>

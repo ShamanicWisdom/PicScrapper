@@ -15,18 +15,28 @@ import com.memeteam.picscrapper.model.ScrapModel;
 import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 import com.memeteam.picscrapper.view.AutomationController;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+
 import javafx.concurrent.Task;
 
 public class Komixxy extends AutomationController {
+	
+	@FXML
+	Button stopButton;
+	
+	public Komixxy(Button stopButton) {
+		this.stopButton = stopButton;
+	}
 		
-	public static Task<Void> startAutomation(ScrapModel scrapModel) {		
+	public Task<Void> startAutomation(ScrapModel scrapModel) {		
 	
 		//Running a task.
 		Task<Void> automationTask = new Task<Void>() {			
 			@Override
 			public Void call() throws Exception {
 				messageList.clear();
-				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Starting automation task for " + scrapModel.getWebsite()))));
+				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Starting automation task for " + scrapModel.getWebsite() + "..."))));
 				try {
 					driver = SeleniumConfigurator.setupDriver(scrapModel.getHeadlessMode());
 					updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Selenium started successfully."))));
@@ -106,12 +116,14 @@ public class Komixxy extends AutomationController {
 			public void succeeded() {
 				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "All memes saved successfully. Task completed!"))));				
 				driver.quit();
+				stopButton.setText("Go Back");
 			}
 			
 			//When task fails.
 			@Override
 			public void failed() {
 				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Task failed!"))));
+				stopButton.setText("Go Back");
 			}
         };		
         return automationTask;

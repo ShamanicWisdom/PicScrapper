@@ -41,13 +41,13 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import javafx.scene.shape.Circle;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import javafx.scene.control.ContentDisplay;
 
 public class AutomationController extends App {
 
@@ -75,6 +75,9 @@ public class AutomationController extends App {
 	Button nextSongButton;
 	@FXML
 	Button nextSongBehaviorButton;
+	
+	@FXML
+	public Button stopButton;
 		
 	@FXML
 	Label songNameLabel;
@@ -100,14 +103,14 @@ public class AutomationController extends App {
 	String currentSongTotalDuration = "";
 		
 	enum NextSongBehaviors {
-		ORDERED,
-		REPEAT,
+		REPEAT_ALL,
+		REPEAT_ONE,
 		RANDOM,
 	}
 	
 	public static WebDriver driver;
 	
-	NextSongBehaviors nextSongBehavior = NextSongBehaviors.ORDERED;
+	NextSongBehaviors nextSongBehavior = NextSongBehaviors.REPEAT_ALL;
 	
 	Task<Void> labelTask = null;
 	Thread labelThread = null;
@@ -162,7 +165,8 @@ public class AutomationController extends App {
 		
 		switch(scrapModel.getWebsite().toLowerCase()) {
 			case "komixxy":
-				automationTask = Komixxy.startAutomation(scrapModel);
+				Komixxy komixxy = new Komixxy(stopButton);
+				automationTask = komixxy.startAutomation(scrapModel);
 				break;
 		}
 		
@@ -171,10 +175,17 @@ public class AutomationController extends App {
 		automationThread = new Thread(automationTask);
 		automationThread.setDaemon(true);
 		automationThread.start();
+				
+		songTimerSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                String style = String.format("-fx-background-color: linear-gradient(to right, #39ff14 %d%%, #000000 %d%%);",
+                		newValue.intValue(), newValue.intValue());
+                songTimerStackPane.setStyle(style);
+            }
+        });
 	}	
 	
 	private void initializePlayer() {
-		playButton.setShape(new Circle(5));
 		InputStream songDirectoryAsInputStream = AutomationController.class.getClassLoader().getResourceAsStream("sounds/player");
 		try {
 			//If 0, then resource is unavailable - most probable scenario is: this application has been started from JAR file. Due to that, gripping a directory directly is impossible. 
@@ -207,7 +218,19 @@ public class AutomationController extends App {
 		}
 		
 		getRandomTrackNumber();
-		playTheCurrentSong();        
+		playTheCurrentSong();     
+		
+		playButton.setContentDisplay(ContentDisplay.CENTER);
+		playButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/pauseIcon.png"))));
+		
+		previousSongButton.setContentDisplay(ContentDisplay.CENTER);
+		previousSongButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/previousIcon.png"))));
+		
+		nextSongButton.setContentDisplay(ContentDisplay.CENTER);
+		nextSongButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/nextIcon.png"))));
+		
+		nextSongBehaviorButton.setContentDisplay(ContentDisplay.CENTER);
+		nextSongBehaviorButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/repeatIcon.png"))));
         
 		//Volume-related adjustments
         volumeSlider.setValue(25);
@@ -245,8 +268,7 @@ public class AutomationController extends App {
             }
         });
         
-        songTimerStackPane.setStyle("-fx-background-color: linear-gradient(to right, #39ff14 25%, #000000 0%);");
-        
+        songTimerStackPane.setStyle("-fx-background-color: linear-gradient(to right, #39ff14 25%, #000000 0%);");        
 	}
 	
 	@FXML
@@ -338,7 +360,7 @@ public class AutomationController extends App {
     	});
 	    
 	    runLabelTask();
-        mediaPlayer.play();        
+        mediaPlayer.play();       
 	}
 	
 	private String secondsToTimestamp(double secondsInTotal) {
@@ -385,7 +407,7 @@ public class AutomationController extends App {
 		Status mediaStatus = mediaPlayer.getStatus();
 		if(mediaStatus == Status.STOPPED || mediaStatus == Status.PLAYING || mediaStatus == Status.PAUSED) { //Stopping the song does not set up the STOPPED status instantly - need to check PLAYING status as well.
 			switch(nextSongBehavior) {
-				case ORDERED: {
+				case REPEAT_ALL: {
 					currentSongIndex += indexValue;
 					if(currentSongIndex == songFilesList.size()) 
 						currentSongIndex = 0;
@@ -394,7 +416,7 @@ public class AutomationController extends App {
 					playTheCurrentSong();
 					break;
 				}
-				case REPEAT: {
+				case REPEAT_ONE: {
 					playTheCurrentSong();
 					break;
 				}
@@ -412,10 +434,10 @@ public class AutomationController extends App {
 		Status mediaStatus = mediaPlayer.getStatus();
 		if(mediaStatus == Status.PLAYING) {
 			mediaPlayer.pause();
-			playButton.setText("PA");			
+			playButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/playIcon.png"))));
 		} else {
 			mediaPlayer.play();
-			playButton.setText("PL");
+			playButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/pauseIcon.png"))));
 		}
 	}
 	
@@ -434,28 +456,31 @@ public class AutomationController extends App {
 	@FXML
 	private void handleNextSongBehavior() {
 		switch(nextSongBehavior) {
-			case ORDERED: {
-				nextSongBehavior = NextSongBehaviors.REPEAT;
-				nextSongBehaviorButton.setText("RPT");
+			case REPEAT_ALL: {
+				nextSongBehavior = NextSongBehaviors.REPEAT_ONE;
+				nextSongBehaviorButton.setContentDisplay(ContentDisplay.CENTER);
+				nextSongBehaviorButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/repeatOneIcon.png"))));
 				break;
 			}
-			case REPEAT: {
+			case REPEAT_ONE: {
 				nextSongBehavior = NextSongBehaviors.RANDOM;
-				nextSongBehaviorButton.setText("RND");
+				nextSongBehaviorButton.setContentDisplay(ContentDisplay.CENTER);
+				nextSongBehaviorButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/randomIcon.png"))));
 				break;
 			}
 			case RANDOM: {
-				nextSongBehavior = NextSongBehaviors.ORDERED;
-				nextSongBehaviorButton.setText("ORD");
+				nextSongBehavior = NextSongBehaviors.REPEAT_ALL;
+				nextSongBehaviorButton.setContentDisplay(ContentDisplay.CENTER);
+				nextSongBehaviorButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/repeatIcon.png"))));
 				break;
 			}
 		}
 	}
 	
-	protected static List<String> updateMessageStack(List<String> messageList, String newMessage) {
+	protected List<String> updateMessageStack(List<String> messageList, String newMessage) {
 		messageList.add(newMessage);		
 		if(messageList.size() > 13)
-			messageList.remove(0);
+			messageList.remove(0);		
 		return messageList;
 	}
 }

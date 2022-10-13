@@ -2,8 +2,10 @@ package com.memeteam.picscrapper.exception;
 
 public class DriverNotAvailableException extends Exception {
 	
-	String localDriverVersion = "";
+	private static final long serialVersionUID = 1L;
 	
+	String localDriverVersion = "";
+		
 	public DriverNotAvailableException(String localDriverVersion) {
         super("Your version of Web Browser is not yet supported by this application. Please add " + localDriverVersion + " to [driverdirectory] folder and re-run the application!");
         this.localDriverVersion = localDriverVersion;
