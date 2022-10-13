@@ -364,3 +364,29 @@
     -fx-border-insets: 1 1 1 1;
     -fx-border-color: #39ff14;
 }
+
+.toggle-button {
+    -fx-font-weight: bold; 
+    -fx-border-color: #39ff14;
+    -fx-border-width: 2;
+    -fx-background-radius: 0;
+    -fx-background-color: #000000;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 9pt;
+    -fx-text-fill: #39ff14;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #303030;
+}
+
+.toggle-button:pressed, .toggle-button:default:hover:pressed {
+  -fx-background-color: #39ff14;
+  -fx-text-fill: #000000;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #39ff14;
+    -fx-text-fill: #000000;
+}

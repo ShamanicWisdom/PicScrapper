@@ -331,6 +331,12 @@ public class WelcomeController extends App {
     			}
     		}
     	});
+    	
+    	//To prevent unclicking the selected toggle button.
+    	styleToggleGroup.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
+    	    if (newVal == null)
+    	        oldVal.setSelected(true);
+    	});
     }
     
     private void initializeRowNodes() {
