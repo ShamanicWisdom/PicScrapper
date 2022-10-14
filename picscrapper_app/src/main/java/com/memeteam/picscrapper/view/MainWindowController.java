@@ -56,8 +56,8 @@ public class MainWindowController extends App {
         });
 	}
 	
-	@FXML
-    void handleExit() {
+	@FXML	
+	void handleExit() {
     	try {
 			Media sound = new Media(App.class.getClassLoader().getResource("sounds/exit.mp3").toURI().toString()); //getting the proper sound file.
 			AudioClip mediaPlayer = new AudioClip(sound.getSource()); //assign a sound as an audioClip.
@@ -69,12 +69,12 @@ public class MainWindowController extends App {
 		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "", okButton, cancelButton);
 		
-		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
 		alert.setTitle("Exit");
 		alert.setHeaderText(null);
 		alert.setContentText("Are you sure?");
 		alert.initStyle(StageStyle.UNDECORATED);
-		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle + "/questionIcon.png"))));
+		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/questionIcon.png"))));
 		
 		Optional<ButtonType> result = alert.showAndWait();
 		if(result.get() == okButton)

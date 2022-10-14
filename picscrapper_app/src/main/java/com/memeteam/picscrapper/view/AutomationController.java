@@ -19,6 +19,7 @@ import org.openqa.selenium.WebDriver;
 import com.memeteam.picscrapper.App;
 import com.memeteam.picscrapper.automation.Komixxy;
 import com.memeteam.picscrapper.model.ScrapModel;
+import com.memeteam.picscrapper.utility.Constants;
 
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -120,6 +121,8 @@ public class AutomationController extends App {
 	
 	public static List<String> messageList = new ArrayList<>();
 	
+    String mainColor = "", backgroundColor = "";
+	
 	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
 		this.stage = stage;			
@@ -174,15 +177,8 @@ public class AutomationController extends App {
         
 		automationThread = new Thread(automationTask);
 		automationThread.setDaemon(true);
-		automationThread.start();
-				
-		songTimerSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
-                String style = String.format("-fx-background-color: linear-gradient(to right, #39ff14 %d%%, #000000 %d%%);",
-                		newValue.intValue(), newValue.intValue());
-                songTimerStackPane.setStyle(style);
-            }
-        });
+		automationThread.start();				
+		
 	}	
 	
 	private void initializePlayer() {
@@ -244,31 +240,41 @@ public class AutomationController extends App {
             }
         });
         
+        if(app.currentStyle.equalsIgnoreCase("Dark")) {
+        	mainColor = Constants.DARKMODE_MAIN_GREEN;
+        	backgroundColor = Constants.DARKMODE_BLACK;
+        } else {
+        	mainColor = Constants.LIGHTMODE_MAIN_BLUE;
+        	backgroundColor = Constants.LIGHTMODE_WHITE;
+        }
+        
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
-                String style = String.format("-fx-background-color: linear-gradient(to right, #39ff14 %d%%, #000000 %d%%);",
+                String style = String.format("-fx-background-color: linear-gradient(to right, " + mainColor + " %d%%, " + backgroundColor + " %d%%);",
                 		newValue.intValue(), newValue.intValue());
                 volumeStackPane.setStyle(style);
                 volumeLabel.setText("Volume: " + newValue.intValue() + "%");
             }
         });
         
-        volumeStackPane.setStyle("-fx-background-color: linear-gradient(to right, #39ff14 25%, #000000 0%);");
+        volumeStackPane.setStyle("-fx-background-color: linear-gradient(to right, " + mainColor + " 25%, " + backgroundColor + " 0%);");
         
         volumeLabel.setText("Volume: 25%");
         
         //Song timer adjustments
-        songTimerSlider.setValue(0);
+        songTimerSlider.setValue(0);        
+        
+       
         
         songTimerSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
-                String style = String.format("-fx-background-color: linear-gradient(to right, #39ff14 %d%%, #000000 %d%%);",
+                String style = String.format("-fx-background-color: linear-gradient(to right, " + mainColor + " %d%%, " + backgroundColor + " %d%%);",
                 		newValue.intValue(), newValue.intValue());
                 songTimerStackPane.setStyle(style);
             }
         });
         
-        songTimerStackPane.setStyle("-fx-background-color: linear-gradient(to right, #39ff14 25%, #000000 0%);");        
+        songTimerStackPane.setStyle("-fx-background-color: linear-gradient(to right, " + mainColor + " 0%, " + backgroundColor + " 0%);");        
 	}
 	
 	@FXML

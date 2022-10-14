@@ -6,9 +6,9 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="785.0" prefWidth="600.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.311" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memeteam.picscrapper.view.MainWindowController">
    <top>
-      <AnchorPane fx:id="titleBar" maxHeight="35.0" minHeight="35.0" prefHeight="35.0" prefWidth="200.0" styleClass="title-bar" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="titleBar" maxHeight="36.0" minHeight="36.0" prefHeight="36.0" prefWidth="200.0" styleClass="title-bar" BorderPane.alignment="CENTER">
          <children>
-            <Button layoutX="542.0" layoutY="2.0" mnemonicParsing="false" onAction="#handleMinimize" prefHeight="35.0" prefWidth="35.0" styleClass="title-bar-button" text="_" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="0.0" />
+            <Button layoutX="542.0" mnemonicParsing="false" onAction="#handleMinimize" prefHeight="35.0" prefWidth="35.0" styleClass="title-bar-button" text="_" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="0.0" />
             <Button layoutX="576.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="35.0" prefWidth="35.0" styleClass="title-bar-button" text="X" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
