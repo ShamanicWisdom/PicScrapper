@@ -49,7 +49,8 @@ public class SeleniumConfigurator {
 				boolean isDriverExists = false;
 				for(File file: driverDirectory.listFiles()) {
 					if(file.exists()) {
-						if(file.getName().contains("msedgedriver")) {							
+						if(file.getName().contains("msedgedriver")) {		
+							System.out.println("LENGTH: " + file.length());
 							if(file.length() != 0) {
 								isDriverExists = true;
 								driverFile = new File("driverdirectory" + File.separator + file.getName());

@@ -168,7 +168,7 @@ public class WelcomeController extends App {
 	String chosenBehavior;
 	String chosenSource;
 
-	List<String> automationWebsitedNameList = new ArrayList<>();
+	List<String> automationWebsiteNameList = new ArrayList<>();
 	List<Object> rowList = new ArrayList<>();
 			
 	public void setApp(App app, Stage stage, BorderPane root) { 
@@ -356,14 +356,17 @@ public class WelcomeController extends App {
     	
 		switch(website.toLowerCase()) {
 			case "komixxy": {
-				showSpecificRow(subpagesRow);
-				
+				showSpecificRow(subpagesRow);				
 				break;
 			}
-			case "coub.com": {
+			case "coub": {
 				showSpecificRow(tagOrCommunityToggleRow);
 				showSpecificRow(loginRow);
 				showSpecificRow(passwordRow);
+				break;
+			}
+			case "jbzd": {
+				showSpecificRow(tagRow);
 				break;
 			}
 			default: {
@@ -430,13 +433,21 @@ public class WelcomeController extends App {
     @FXML
     void handleScrapping() throws Exception {
     	if(dataValidator()) {
-        	//Starting to fill ScrapModel object.        	
-    		scrapModel.setScrapModel(chosenWebsite, Integer.parseInt(subpagesField.getText()), chosenLocation, chosenBehavior, headlessModeCheckBox.isSelected(), selectorCheckBox.isSelected());
+        	//Starting to fill ScrapModel object.   
+    		int subpagesToScrap = 0;
+    		try {
+    			subpagesToScrap = Integer.parseInt(subpagesField.getText());
+    		} catch(NumberFormatException fieldMightBeNull) {
+    			subpagesToScrap = 0;
+    		}
+    		scrapModel.setScrapModel(chosenWebsite, subpagesToScrap, chosenLocation, chosenBehavior, headlessModeCheckBox.isSelected(), selectorCheckBox.isSelected(), tagField.getText(), communityField.getText(), loginField.getText(), passwordField.getText());
     		app.showAutomationProgress(scrapModel);
     	}    	
     }
     
     private boolean dataValidator() {
+    	automationWebsiteNameList.clear();
+    	
     	String errorMessage = "";
     	if(chosenWebsite.isEmpty())
     		errorMessage += "No website is chosen!\n";
@@ -457,7 +468,7 @@ public class WelcomeController extends App {
 				    if (entry.getName().contains("com/memeteam/picscrapper/automation")) 
 				    	//Grab every file (excluding the directory itself).
 				    	if(!entry.getName().equalsIgnoreCase("com/memeteam/picscrapper/automation/") || !entry.getName().contains("$"))
-				    		automationWebsitedNameList.add(entry.getName().replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));				    
+				    		automationWebsiteNameList.add(entry.getName().replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));				    
 				}
 			} else {
 				InputStreamReader streamReader = new InputStreamReader(automationDirectoryInputStream, StandardCharsets.UTF_8);
@@ -468,8 +479,8 @@ public class WelcomeController extends App {
 			e.printStackTrace();
 		}
 		
-		if(!automationWebsitedNameList.contains(chosenWebsite)) 
-			errorMessage += "Given website [" + chosenWebsite + "] is not supported!";
+		if(!automationWebsiteNameList.contains(chosenWebsite)) 
+			errorMessage += "Given website [" + chosenWebsite + "] is not supported!\n";
     	
 		if(subpagesRow.getMaxHeight() != 0.0) {
 	    	if(subpagesField.getText().isEmpty()) 
@@ -481,7 +492,19 @@ public class WelcomeController extends App {
 	    	} catch(NumberFormatException e) {
 	    		errorMessage += "Subpages count field allows only digits!\n";
 	    	}
+		}	
+		
+		//Login and password checkout.
+		if(loginRow.getMaxHeight() != 0.0 || passwordRow.getMaxHeight() != 0.0) {
+			if(loginRow.getMaxHeight() != 0.0 && passwordRow.getMaxHeight() != 0.0) {
+				if(!loginField.getText().trim().isEmpty() || !passwordField.getText().trim().isEmpty()) {
+					if(loginField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty())
+						errorMessage += "In order to log in to a chosen website, please provide both login and password!\n";	
+				}
+			} else 
+				errorMessage += "Internal error - login and password rows should be visible at once!!\n";			
 		}
+				
     	if(chosenLocation == null) 
     		errorMessage += "Saving location is not set up!\n";
     	if(chosenBehavior.isEmpty()) 
@@ -512,7 +535,7 @@ public class WelcomeController extends App {
     //Creating a custom Consumer event for lambda expression.
   	Consumer<String> saveTheWebsiteClass = new Consumer<String>() {
   	    public void accept(String automationClassName) {
-  	        automationWebsitedNameList.add(automationClassName.replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));
+  	        automationWebsiteNameList.add(automationClassName.replaceAll("com/memeteam/picscrapper/automation/", "").replaceAll(".class", ""));
   	    }
   	};
   	

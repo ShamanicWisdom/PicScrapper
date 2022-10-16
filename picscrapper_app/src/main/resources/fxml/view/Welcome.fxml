@@ -147,7 +147,7 @@
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Tag name?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="6">
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="(optional) Tag name?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="6">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -155,7 +155,7 @@
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="Community name?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="7">
+            <Label alignment="CENTER_RIGHT" minHeight="0.0" minWidth="0.0" prefHeight="75.0" prefWidth="200.0" styleClass="label-table-content" text="(optional) Community name?" textAlignment="RIGHT" wrapText="true" GridPane.rowIndex="7">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

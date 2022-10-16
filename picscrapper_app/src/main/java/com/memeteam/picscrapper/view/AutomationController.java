@@ -17,6 +17,7 @@ import java.util.jar.JarFile;
 import org.openqa.selenium.WebDriver;
 
 import com.memeteam.picscrapper.App;
+import com.memeteam.picscrapper.automation.Coub;
 import com.memeteam.picscrapper.automation.Komixxy;
 import com.memeteam.picscrapper.model.ScrapModel;
 import com.memeteam.picscrapper.utility.Constants;
@@ -170,6 +171,9 @@ public class AutomationController extends App {
 			case "komixxy":
 				Komixxy komixxy = new Komixxy(stopButton);
 				automationTask = komixxy.startAutomation(scrapModel);
+				break;
+			case "coub":
+				Coub coub = new Coub();
 				break;
 		}
 		

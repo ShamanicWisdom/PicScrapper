@@ -80,8 +80,7 @@ public class MainWindowController extends App {
 		if(result.get() == okButton)
 			System.exit(0);
 		else
-			alert.close();
-		
+			alert.close();		
     }
 	
 	@FXML
