@@ -30,7 +30,6 @@ public class Komixxy extends AutomationController {
 	}
 		
 	public Task<Void> startAutomation(ScrapModel scrapModel) {		
-	
 		//Running a task.
 		Task<Void> automationTask = new Task<Void>() {			
 			@Override

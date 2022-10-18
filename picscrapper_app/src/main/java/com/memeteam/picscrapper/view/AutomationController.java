@@ -167,13 +167,17 @@ public class AutomationController extends App {
 			}
 		});
 		
+		//To ensure that label won't jam.
+		runLabelTask();
+		
 		switch(scrapModel.getWebsite().toLowerCase()) {
 			case "komixxy":
 				Komixxy komixxy = new Komixxy(stopButton);
 				automationTask = komixxy.startAutomation(scrapModel);
 				break;
 			case "coub":
-				Coub coub = new Coub();
+				Coub coub = new Coub(stopButton);
+				automationTask = coub.startAutomation(scrapModel);
 				break;
 		}
 		
@@ -267,8 +271,6 @@ public class AutomationController extends App {
         
         //Song timer adjustments
         songTimerSlider.setValue(0);        
-        
-       
         
         songTimerSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {

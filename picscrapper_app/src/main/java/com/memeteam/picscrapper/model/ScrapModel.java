@@ -78,6 +78,7 @@ public class ScrapModel {
 				+ "\nHeadless mode: [" + headlessMode + "]" 
 				+ "\nDriver selector: [" + automatedWebDriverSelector + "]"
 				+ "\nTag: [" + tag + "]"
-				+ "\nCommunity: [" + community + "]";
+				+ "\nCommunity: [" + community + "]"
+				+ "\nLogin: [" + login + "]";
 	}
 }

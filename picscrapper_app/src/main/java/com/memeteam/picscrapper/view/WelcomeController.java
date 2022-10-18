@@ -362,7 +362,6 @@ public class WelcomeController extends App {
 			case "coub": {
 				showSpecificRow(tagOrCommunityToggleRow);
 				showSpecificRow(loginRow);
-				showSpecificRow(passwordRow);
 				break;
 			}
 			case "jbzd": {
@@ -494,15 +493,17 @@ public class WelcomeController extends App {
 	    	}
 		}	
 		
-		//Login and password checkout.
-		if(loginRow.getMaxHeight() != 0.0 || passwordRow.getMaxHeight() != 0.0) {
-			if(loginRow.getMaxHeight() != 0.0 && passwordRow.getMaxHeight() != 0.0) {
-				if(!loginField.getText().trim().isEmpty() || !passwordField.getText().trim().isEmpty()) {
-					if(loginField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty())
-						errorMessage += "In order to log in to a chosen website, please provide both login and password!\n";	
-				}
-			} else 
-				errorMessage += "Internal error - login and password rows should be visible at once!!\n";			
+		//Login and password checkout. Coub has a different login pattern - instead of password, a code is sent to a given email in order to log-in.
+		if(!chosenWebsite.equalsIgnoreCase("Coub")) {
+			if(loginRow.getMaxHeight() != 0.0 || passwordRow.getMaxHeight() != 0.0) {
+				if(loginRow.getMaxHeight() != 0.0 && passwordRow.getMaxHeight() != 0.0) {
+					if(!loginField.getText().trim().isEmpty() || !passwordField.getText().trim().isEmpty()) {
+						if(loginField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty())
+							errorMessage += "In order to log in to a chosen website, please provide both login and password!\n";	
+					}
+				} else 
+					errorMessage += "Internal error - login and password rows should be visible at once!!\n";			
+			}
 		}
 				
     	if(chosenLocation == null) 
