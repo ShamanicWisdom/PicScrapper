@@ -511,6 +511,17 @@ public class WelcomeController extends App {
     	if(chosenBehavior.isEmpty()) 
     		errorMessage += "Duplicated files treat strategy not set up!\n";
     	if(errorMessage.isEmpty()) {
+    		if(chosenWebsite.equalsIgnoreCase("Coub") && !loginField.getText().trim().isEmpty()) {
+    			Alert alert = new Alert(AlertType.INFORMATION);
+        		alert.initOwner(stage);
+        		alert.setTitle("Coub login info!");
+        		alert.setHeaderText("Important information!");
+        		alert.setContentText("Coub login detected.\nAutomation will force Coub to send an access code, but it needs to be retrieved and typed manually!\nYou will have up to 120 seconds to do that.\nOtherwise, automation will ignore login attempt and it will proceed as a guest.");
+        		alert.initStyle(StageStyle.UNDECORATED);
+    			alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/" + app.currentStyle + ".css").toExternalForm());
+        		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/informationIcon.png"))));
+        		alert.showAndWait();
+    		}
     		return true;
     	} else {
     		try {
@@ -522,7 +533,7 @@ public class WelcomeController extends App {
     		}
     		Alert alert = new Alert(AlertType.ERROR);
     		alert.initOwner(stage);
-    		alert.setTitle("Error!");;
+    		alert.setTitle("Error!");
     		alert.setHeaderText("Something went wrong...");
     		alert.setContentText(errorMessage);
     		alert.initStyle(StageStyle.UNDECORATED);
