@@ -1,15 +1,20 @@
 package com.memeteam.picscrapper.automation;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.memeteam.picscrapper.model.ScrapModel;
 import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 import com.memeteam.picscrapper.view.AutomationController;
@@ -25,6 +30,8 @@ public class Coub extends AutomationController {
 	
 	//Creating the JavascriptExecutor interface object by Type casting		
     JavascriptExecutor jsExecutor;
+    
+    JsonObject jsonObject;
 	
 	public Coub(Button stopButton) {
 		this.stopButton = stopButton;
@@ -131,7 +138,30 @@ public class Coub extends AutomationController {
 							Point coubLocation = coub.getLocation();
 							jsExecutor.executeScript("window.scrollTo(0, " + coubLocation.getY() + ");");	
 							coub.click();
+							WebElement coubData = coub.findElement(By.className("data"));
+							
+							//Generating JSON object from the scrapped output.
+							jsonObject = JsonParser.parseString(coubData.getAttribute("textContent")).getAsJsonObject();
+							
+							//Assigning the correct data.
+							String coubTitle = jsonObject.get("title").getAsString().replaceAll("!", "").replaceAll("<", "").replaceAll(">", "").replaceAll("|", "").replace("?", "").trim();
+							String coubUploadDate = jsonObject.get("updated_at").getAsString().replaceAll(":", ".");
+							JsonObject coubFiles = jsonObject.get("file_versions").getAsJsonObject();
+							JsonObject coubHtml5Links = coubFiles.get("html5").getAsJsonObject();
+
+							String coubAudioLink = coubHtml5Links.get("audio").getAsJsonObject().get("high").getAsJsonObject().get("url").getAsString();
+							String coubVideoLink = coubHtml5Links.get("video").getAsJsonObject().get("higher").getAsJsonObject().get("url").getAsString();
+
+							String audioName = scrapModel.getSavingLocation() + "/" + coubTitle + coubUploadDate + ".mp3";
+							String videoName = scrapModel.getSavingLocation() + "/" + coubTitle + coubUploadDate + ".mp4";
+
+							downloadData(coubAudioLink, audioName);
+							downloadData(coubVideoLink, videoName);
+							
+							System.out.println("COUBDATA:\nname : " + coubTitle + " uploaded at: " + coubUploadDate + "\nvid  : " + coubVideoLink + "\naudio: " + coubAudioLink);
 							TimeUnit.SECONDS.sleep(2);
+							
+							//stuff to be used::::      ffmpeg -stream_loop -1 -i input.mp4 -i input.mp3 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
 						}
 						
 						TimeUnit.SECONDS.sleep(5);
@@ -164,4 +194,17 @@ public class Coub extends AutomationController {
         };		
         return automationTask;
 	}
+	
+	private void downloadData(String urlLink, String fileName) {
+        URL url = null;
+        try {
+        	url = new URL(urlLink);
+            FileUtils.copyURLToFile(url, new File(fileName));
+            System.out.println("File Downloaded Successfully.");
+        } catch (IOException e) {
+            System.out.println("Failed to download a file. Reason:");
+            e.printStackTrace();
+        }        
+        
+    }
 }
