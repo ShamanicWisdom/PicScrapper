@@ -21,6 +21,7 @@ import com.memeteam.picscrapper.automation.Coub;
 import com.memeteam.picscrapper.automation.Komixxy;
 import com.memeteam.picscrapper.model.ScrapModel;
 import com.memeteam.picscrapper.utility.Constants;
+import com.memeteam.picscrapper.utility.FfmpegConfigurator;
 
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -294,6 +295,7 @@ public class AutomationController extends App {
 				System.out.println("Exception: " + e.getLocalizedMessage());
 			}
 		}
+		FfmpegConfigurator.killFfmpeg();
 		mediaPlayer.dispose();
 		app.showWelcome();
 	}

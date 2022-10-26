@@ -50,7 +50,6 @@ public class SeleniumConfigurator {
 				for(File file: driverDirectory.listFiles()) {
 					if(file.exists()) {
 						if(file.getName().contains("msedgedriver")) {		
-							System.out.println("LENGTH: " + file.length());
 							if(file.length() != 0) {
 								isDriverExists = true;
 								driverFile = new File("driverdirectory" + File.separator + file.getName());
@@ -74,6 +73,8 @@ public class SeleniumConfigurator {
 			options = new EdgeOptions();
 			
 			options.setHeadless(headlessMode);
+
+			//options.addArgument("--mute-audio");
 			
 			driver = new EdgeDriver(options);
 		} catch(SessionNotCreatedException e) {

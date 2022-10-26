@@ -4,6 +4,8 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 import com.memeteam.picscrapper.App;
+import com.memeteam.picscrapper.utility.FfmpegConfigurator;
+import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -77,9 +79,11 @@ public class MainWindowController extends App {
 		alert.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/questionIcon.png"))));
 		
 		Optional<ButtonType> result = alert.showAndWait();
-		if(result.get() == okButton)
+		if(result.get() == okButton) {
+			SeleniumConfigurator.killDriver();
+			FfmpegConfigurator.killFfmpeg();
 			System.exit(0);
-		else
+		} else
 			alert.close();		
     }
 	

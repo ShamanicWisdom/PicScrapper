@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 import com.memeteam.picscrapper.model.ScrapModel;
+import com.memeteam.picscrapper.utility.FfmpegConfigurator;
+import com.memeteam.picscrapper.utility.SeleniumConfigurator;
 import com.memeteam.picscrapper.view.AutomationController;
 import com.memeteam.picscrapper.view.MainWindowController;
 import com.memeteam.picscrapper.view.WelcomeController;
@@ -68,6 +70,8 @@ public class App extends Application {
 				
 				Optional<ButtonType> result = alert.showAndWait();
 				if(result.get() == okButton) {
+					SeleniumConfigurator.killDriver();
+					FfmpegConfigurator.killFfmpeg();
 					System.exit(0);
 				} else {
 					alert.close();
