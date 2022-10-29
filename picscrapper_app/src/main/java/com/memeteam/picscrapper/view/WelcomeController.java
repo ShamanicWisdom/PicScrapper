@@ -211,11 +211,11 @@ public class WelcomeController extends App {
     
     void initContent() {		
 		scrapModel = new ScrapModel();
-
-    	locationLabel.setText(""); 
 		
-		resetFields();    	
-    	initializeRowNodes();
+		locationLabel.setText("");
+		
+    	resetFields();
+		initializeRowNodes();
     	
     	//Website ChoiceBox script initiation.
     	websiteChoiceBox.setTooltip(new Tooltip("List of supported pages ready to be scrapped."));
@@ -382,7 +382,7 @@ public class WelcomeController extends App {
 			Media sound = new Media(App.class.getClassLoader().getResource("sounds/exit.mp3").toURI().toString()); //getting the proper sound file.
 			AudioClip mediaPlayer = new AudioClip(sound.getSource()); //assign a sound as an audioClip.
 	        mediaPlayer.play();
-		} catch (URISyntaxException e) {
+		} catch(URISyntaxException e) {
 			e.printStackTrace();
 		}
     	ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
@@ -478,7 +478,7 @@ public class WelcomeController extends App {
 				BufferedReader bufferedReader = new BufferedReader(streamReader);				
 				bufferedReader.lines().forEach(saveTheWebsiteClass);
 			}				
-		} catch (Exception e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		

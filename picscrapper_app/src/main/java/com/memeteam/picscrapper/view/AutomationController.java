@@ -458,12 +458,14 @@ public class AutomationController extends App {
 	@FXML
 	private void handlePrevious() {
 		mediaPlayer.stop();
+		playButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/pauseIcon.png"))));
 		playMusic(-1);
 	}
 	
 	@FXML
 	private void handleNext() {
 		mediaPlayer.stop();
+		playButton.setGraphic(new ImageView(new Image(App.class.getClassLoader().getResourceAsStream("images/" + app.currentStyle.toLowerCase() + "/pauseIcon.png"))));
 		playMusic(1);
 	}
 	

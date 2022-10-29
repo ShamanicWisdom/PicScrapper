@@ -183,7 +183,6 @@ public class Coub extends AutomationController {
 							System.out.println("invoking...\n" + "\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
 
 							Process ffmpegProcess = Runtime.getRuntime().exec("\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
-
 							
 							updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Rendering '" + coubTitle + "'..."))));	
 							
@@ -224,6 +223,8 @@ public class Coub extends AutomationController {
 						
 						TimeUnit.SECONDS.sleep(2);
 						currentCoubPage++;
+					} catch(InterruptedException ex) {
+						System.out.println("Stop triggered.");
 					} catch(Exception e) {
 						e.printStackTrace();
 						e.getMessage();
@@ -231,7 +232,6 @@ public class Coub extends AutomationController {
 					}
 				}
 				
-				TimeUnit.HOURS.sleep(1);
 				return null;
 			}
 			

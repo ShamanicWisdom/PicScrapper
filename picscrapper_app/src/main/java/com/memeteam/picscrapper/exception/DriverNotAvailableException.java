@@ -18,6 +18,6 @@ public class DriverNotAvailableException extends Exception {
 
 class ExceptionHelper {
     public static String getMessage(Exception e) {
-        return e.getMessage() + "XD";
+        return e.getMessage();
     }
 }
