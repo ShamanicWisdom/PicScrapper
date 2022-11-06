@@ -112,14 +112,16 @@ public class Coub extends AutomationController {
 				if(!scrapModel.getCommunity().isEmpty()) {
 					driver.get("https://coub.com/community/" + scrapModel.getCommunity());
 					if(driver.getTitle().equalsIgnoreCase("Coub. Page not found")) {
-						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Community named [" + scrapModel.getCommunity() + "] does not exist!\nPlease re-run the application and ensure that chosen community exists!"))));	
+						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Community named [" + scrapModel.getCommunity() + "] does not exist!"))));	
+						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Please re-run the application and ensure that chosen community exists!"))));	
 						failed();
 					}
 				}
 				if(!scrapModel.getTag().isEmpty()) {
 					driver.get("https://coub.com/tags/" + scrapModel.getTag());
 					if(driver.getTitle().equalsIgnoreCase("Nothing found")) {
-						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Tag named [" + scrapModel.getTag() + "] does not exist!\nPlease re-run the application and ensure that chosen tag exists!"))));	
+						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Tag named [" + scrapModel.getTag() + "] does not exist!"))));	
+						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Please re-run the application and ensure that chosen tag exists!"))));	
 						failed();
 					}
 				}
@@ -132,7 +134,6 @@ public class Coub extends AutomationController {
 						WebElement coubPageList = driver.findElement(By.className("coubs-list__inner"));
 						List<WebElement> loadedPages = coubPageList.findElements(By.className("page"));
 						WebElement currentPage = null;
-						System.out.println("loadedpages size: " + loadedPages.size());
 						
 						boolean moreLoadedPagesSpotted = false;
 						for(int i = 0; i < loadedPages.size(); i++) {
@@ -154,7 +155,6 @@ public class Coub extends AutomationController {
 							updateMessage(new String(String.join("\n", updateMessageStack(messageList, "No more coubs found!"))));	
 							break;
 						}
-						System.out.println("Coub in that page: " + coubsOfCurrentPage.size());
 						
 						for(WebElement coub: coubsOfCurrentPage) {							
 							currentAudioFile = new File("");
@@ -162,7 +162,6 @@ public class Coub extends AutomationController {
 						    currentCoub = new File("");
 						    isFileRendered = true;
 														
-							System.out.println("Coub: " + coub.getAttribute("data-permalink"));
 							Point coubLocation = coub.getLocation();
 							jsExecutor.executeScript("window.scrollTo(0, " + coubLocation.getY() + ");");	
 							coub.click();
@@ -190,11 +189,8 @@ public class Coub extends AutomationController {
 						    currentVideoFile = new File(videoName);
 						    isFileRendered = false;
 							
-							System.out.println("COUBDATA:\nname : " + coubTitle + " uploaded at: " + coubUploadDate + "\nvid  : " + coubVideoLink + "\naudio: " + coubAudioLink);
 							TimeUnit.SECONDS.sleep(2);
 							
-							System.out.println("invoking...\n" + "\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -crf 28 -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
-
 							Process ffmpegProcess = Runtime.getRuntime().exec("\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -crf 28 -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
 							
 							updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Rendering '" + coubTitle + "'..."))));	
@@ -281,7 +277,6 @@ public class Coub extends AutomationController {
         try {
         	url = new URL(urlLink);
             FileUtils.copyURLToFile(url, new File(fileName));
-            System.out.println("File Downloaded Successfully.");
         } catch (IOException e) {
             System.out.println("Failed to download a file. Reason:");
             e.printStackTrace();
