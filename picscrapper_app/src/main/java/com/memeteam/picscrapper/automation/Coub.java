@@ -39,6 +39,12 @@ public class Coub extends AutomationController {
     JavascriptExecutor jsExecutor;
     
     JsonObject jsonObject;
+    
+    public File currentAudioFile = new File("");
+    public File currentVideoFile = new File("");
+    public File currentCoub = new File("");
+    public boolean isFileRendered;
+    boolean moreCoubs = true;
 	
 	public Coub(Button stopButton) {
 		this.stopButton = stopButton;
@@ -107,18 +113,16 @@ public class Coub extends AutomationController {
 					driver.get("https://coub.com/community/" + scrapModel.getCommunity());
 					if(driver.getTitle().equalsIgnoreCase("Coub. Page not found")) {
 						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Community named [" + scrapModel.getCommunity() + "] does not exist!\nPlease re-run the application and ensure that chosen community exists!"))));	
-						super.failed();
+						failed();
 					}
 				}
 				if(!scrapModel.getTag().isEmpty()) {
 					driver.get("https://coub.com/tags/" + scrapModel.getTag());
 					if(driver.getTitle().equalsIgnoreCase("Nothing found")) {
-						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Tag named [" + scrapModel.getCommunity() + "] does not exist!\nPlease re-run the application and ensure that chosen tag exists!"))));	
-						super.failed();
+						updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Tag named [" + scrapModel.getTag() + "] does not exist!\nPlease re-run the application and ensure that chosen tag exists!"))));	
+						failed();
 					}
 				}
-				
-				boolean moreCoubs = true;		
 				
 				//inner paging - counting from 1 to x.
 				int currentCoubPage = 1;
@@ -152,7 +156,12 @@ public class Coub extends AutomationController {
 						}
 						System.out.println("Coub in that page: " + coubsOfCurrentPage.size());
 						
-						for(WebElement coub: coubsOfCurrentPage) {
+						for(WebElement coub: coubsOfCurrentPage) {							
+							currentAudioFile = new File("");
+						    currentVideoFile = new File("");
+						    currentCoub = new File("");
+						    isFileRendered = true;
+														
 							System.out.println("Coub: " + coub.getAttribute("data-permalink"));
 							Point coubLocation = coub.getLocation();
 							jsExecutor.executeScript("window.scrollTo(0, " + coubLocation.getY() + ");");	
@@ -177,20 +186,26 @@ public class Coub extends AutomationController {
 							downloadData(coubAudioLink, audioName);
 							downloadData(coubVideoLink, videoName);
 							
+							currentAudioFile = new File(audioName);
+						    currentVideoFile = new File(videoName);
+						    isFileRendered = false;
+							
 							System.out.println("COUBDATA:\nname : " + coubTitle + " uploaded at: " + coubUploadDate + "\nvid  : " + coubVideoLink + "\naudio: " + coubAudioLink);
 							TimeUnit.SECONDS.sleep(2);
 							
-							System.out.println("invoking...\n" + "\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
+							System.out.println("invoking...\n" + "\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -crf 28 -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
 
-							Process ffmpegProcess = Runtime.getRuntime().exec("\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
+							Process ffmpegProcess = Runtime.getRuntime().exec("\"" + ffmpegConfigurator.getFfmpegLocation().substring(0, ffmpegConfigurator.getFfmpegLocation().length() - 4) + "\" -stream_loop -1 -i \"" + videoName + "\" -i \"" + audioName + "\" -crf 28 -shortest -map 0:v:0 -map 1:a:0 -y \"" + scrapModel.getSavingLocation() + "\\ps_" + coubTitle + coubUploadDate + ".mp4\"");
 							
 							updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Rendering '" + coubTitle + "'..."))));	
+							
+							currentCoub = new File(scrapModel.getSavingLocation() + "/ps_" + coubTitle + coubUploadDate + ".mp4");							
 							
 							//Let the process start.
 							TimeUnit.SECONDS.sleep(5);
 							
 							boolean ffmpegStillUp = true;
-							
+	
 							while(ffmpegStillUp) {
 								
 								InputStream ffmpegStream = ffmpegProcess.getErrorStream();
@@ -210,25 +225,29 @@ public class Coub extends AutomationController {
 								if(processList.contains("INFO: No tasks are running which match the specified criteria.")) {
 									updateMessage(new String(String.join("\n", updateMessageStack(messageList, "'" + coubTitle + "' rendered."))));
 									ffmpegStillUp = false;
+								    currentCoub = new File("");
+								    isFileRendered = true;
 								} else 
 									TimeUnit.SECONDS.sleep(2);
 							}
 							
 							//cleanup...
-							File video = new File(videoName);
-							video.delete();
-							File audio = new File(audioName);
-							audio.delete();
+						    currentAudioFile.delete();
+							currentVideoFile.delete();
+							currentAudioFile = new File("");
+						    currentVideoFile = new File("");
 						}
 						
-						TimeUnit.SECONDS.sleep(2);
+						TimeUnit.SECONDS.sleep(5);
 						currentCoubPage++;
 					} catch(InterruptedException ex) {
 						System.out.println("Stop triggered.");
+						failed();
 					} catch(Exception e) {
 						e.printStackTrace();
 						e.getMessage();
 						moreCoubs = false;
+						failed();
 					}
 				}
 				
@@ -246,9 +265,12 @@ public class Coub extends AutomationController {
 			//When task fails.
 			@Override
 			public void failed() {
-				updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Task failed!"))));
-				FfmpegConfigurator.killFfmpeg();
-				stopButton.setText("Go Back");
+				if(!messageList.contains("Task failed!")) 
+					updateMessage(new String(String.join("\n", updateMessageStack(messageList, "Task failed!"))));
+				FfmpegConfigurator.killFfmpeg();				
+				moreCoubs = false;
+				driver.close();				
+				cancel();
 			}
         };		
         return automationTask;

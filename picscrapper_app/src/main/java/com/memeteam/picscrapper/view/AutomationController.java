@@ -104,7 +104,7 @@ public class AutomationController extends App {
 	double songVolume = 0.25;
 	
 	String currentSongTotalDuration = "";
-		
+			
 	enum NextSongBehaviors {
 		REPEAT_ALL,
 		REPEAT_ONE,
@@ -124,6 +124,9 @@ public class AutomationController extends App {
 	public static List<String> messageList = new ArrayList<>();
 	
     String mainColor = "", backgroundColor = "";
+    
+    
+    Coub coub;
 	
 	public void setApp(App app, Stage stage, ScrapModel scrapModel) { 
 		this.app = app; 
@@ -177,13 +180,26 @@ public class AutomationController extends App {
 				automationTask = komixxy.startAutomation(scrapModel);
 				break;
 			case "coub":
-				Coub coub = new Coub(stopButton);
+				coub = new Coub(stopButton);
 				automationTask = coub.startAutomation(scrapModel);
 				break;
 		}
 		
 		progressTextArea.textProperty().bind(automationTask.messageProperty());	
-        
+		
+		automationTask.setOnCancelled(event -> {
+			
+			if(coub.currentAudioFile.exists())
+				coub.currentAudioFile.delete();
+			if(coub.currentVideoFile.exists())
+				coub.currentVideoFile.delete();				
+			if(!coub.isFileRendered) {					
+				coub.currentCoub.delete();
+			}
+			
+			stopButton.setText("Go Back");
+		});
+		        
 		automationThread = new Thread(automationTask);
 		automationThread.setDaemon(true);
 		automationThread.start();				
@@ -286,7 +302,7 @@ public class AutomationController extends App {
 	
 	@FXML
 	void handleStop() {
-		if(automationThread.isAlive())
+		if(automationThread.isAlive()) 
 			automationThread.interrupt();
 		if(driver != null) {
 			try {
